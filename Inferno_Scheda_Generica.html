@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Scheda Smarrito</title>
@@ -48,7 +49,12 @@
       <div class="field-group"><label class="field-label">Nome Personaggio</label><input class="field-input" id="f-nome" placeholder="Nome..."></div>
       <div class="field-group"><label class="field-label">Peccato &amp; Punizione</label><input class="field-input" id="f-pec" placeholder="Peccato → Luogo"></div>
     </div>
-    <div class="hero-center">
+    <div class="hero-center" style="display:flex; flex-direction:column; align-items:center;">
+      <div class="avatar-box" onclick="if(!document.body.classList.contains('master-view')) document.getElementById('avatar-upload').click()">
+        <img id="avatar-img" src="" style="display:none;">
+        <span id="avatar-placeholder" style="font-size: 36px; opacity: 0.5;">👤</span>
+      </div>
+      <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="caricaAvatar(event)">
       <div class="hero-title">Inferno</div>
       <div class="hero-sub">Dante's Guide to Hell</div>
     </div>
@@ -207,439 +213,53 @@
   </div>
 </div>
 
-<div style="border-top:1px solid var(--border);padding:12px 40px;max-width:1400px;margin:0 auto;">
-  <span style="font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase;">Inferno — Dante's Guide to Hell · Scheda Generica v2.0</span>
+<div class="footer-actions">
+  <div class="footer-info">
+    Inferno — Dante's Guide to Hell · v2.0
+  </div>
+  
+  <div class="footer-btns">
+    <button class="f-btn" onclick="copiaLinkMaster()" title="Copia link sola lettura">
+      👁️ <span>Link Master</span>
+    </button>
+    <button class="f-btn" id="btn-pdf" onclick="esportaPDF()" title="Esporta in PDF">
+      📄 <span>Scarica PDF</span>
+    </button>
+  </div>
 </div>
 
 <script>
-var D={
-  theme:'ember',
-  nome:'',cls:'',all:'',pec:'',pfx:'',pf:'',ca:'',ini:'',vel:'',prf:'+2',
-  vir:'',viz:'',cr:'',nt:'',
-  spe:33,speMax:33,di:false,
-  spCar:'',spCd:'',spBon:'',
-  car:[
-    {n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},
-    {n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}
-  ],
-  ts:[
-    {n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},
-    {n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}
-  ],
-  ab:[
-    {n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},
-    {n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},
-    {n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},
-    {n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},
-    {n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},
-    {n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},
-    {n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},
-    {n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}
-  ],
+// 1. Dati iniziali vuoti per la scheda generica
+var D = {
+  theme:'ember', nome:'',cls:'',all:'',pec:'',pfx:'',pf:'',ca:'',ini:'',vel:'',prf:'+2',
+  vir:'',viz:'',cr:'',nt:'', spe:33,speMax:33,di:false, spCar:'',spCd:'',spBon:'',
+  car:[{n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},{n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}],
+  ts:[{n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},{n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}],
+  ab:[{n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},{n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},{n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},{n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},{n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},{n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},{n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},{n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}],
   em:[],atk:[],pv:[],res:[],
   spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
   slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}
 };
-
-function togMob(t){t.classList.toggle('open');t.nextElementSibling.classList.toggle('open');}
-function fm(n){return(n>=0?'+':'')+n;}
-function gMod(k){var c=D.car.find(c=>c.k===k);var i=document.querySelector('[data-ck="'+k+'"]');var v=i?parseInt(i.value)||10:(c?c.v:10);return Math.floor((v-10)/2);}
-function gPrf(){var v=document.getElementById('f-prf');return parseInt((v?v.value:'+2').replace('+',''))||2;}
-
-function rCar(){
-  var c=document.getElementById('cl');c.innerHTML='';
-  D.car.forEach(function(cr){
-    var d=document.createElement('div');d.className='caract-block';
-    d.innerHTML='<div class="caract-name">'+cr.n+'</div>'+
-      '<input type="number" class="caract-val" data-ck="'+cr.k+'" value="'+cr.v+'" min="1" max="30">'+
-      '<div class="caract-mod" id="cm-'+cr.k+'">'+fm(Math.floor((cr.v-10)/2))+'</div>';
-    c.appendChild(d);
-  });
-  c.querySelectorAll('.caract-val').forEach(function(inp){
-    inp.addEventListener('input',function(){
-      var k=inp.dataset.ck;
-      document.getElementById('cm-'+k).textContent=fm(Math.floor(((parseInt(inp.value)||10)-10)/2));
-      rAll();
-    });
-  });
-}
-
-function rTS(){
-  var c=document.getElementById('ts-col');c.innerHTML='';
-  D.ts.forEach(function(ts,i){
-    var b=gMod(ts.k)+(ts.p?gPrf():0);
-    var r=document.createElement('div');r.className='skill-row';
-    r.innerHTML='<div class="pdot '+(ts.p?'on':'')+'" onclick="tTS(this,'+i+')"></div>'+
-      '<span class="skill-bonus" id="tsb-'+i+'">'+fm(b)+'</span>'+
-      '<span class="skill-name">'+ts.n+'</span>';
-    c.appendChild(r);
-  });
-}
-function tTS(d,i){d.classList.toggle('on');D.ts[i].p=d.classList.contains('on');rfTS();}
-function rfTS(){D.ts.forEach(function(ts,i){var e=document.getElementById('tsb-'+i);if(e)e.textContent=fm(gMod(ts.k)+(ts.p?gPrf():0));});}
-
-function rAb(){
-  var c=document.getElementById('ab-col');c.innerHTML='';
-  D.ab.forEach(function(ab,i){
-    var b=gMod(ab.k)+(ab.p?gPrf():0);
-    var r=document.createElement('div');r.className='skill-row';
-    r.innerHTML='<div class="pdot '+(ab.p?'on':'')+'" onclick="tAb(this,'+i+')"></div>'+
-      '<span class="skill-bonus" id="abb-'+i+'">'+fm(b)+'</span>'+
-      '<input class="skill-name-input" value="'+ab.n+'" placeholder="Abilità" onchange="D.ab['+i+'].n=this.value">'+
-      '<input class="attr-input" value="'+ab.k+'" placeholder="FOR" onchange="D.ab['+i+'].k=this.value;rfAb()">'+
-      '<button class="del-btn" onclick="delAb('+i+')">✕</button>';
-    c.appendChild(r);
-  });
-}
-function tAb(d,i){d.classList.toggle('on');D.ab[i].p=d.classList.contains('on');rfAb();}
-function rfAb(){D.ab.forEach(function(ab,i){var e=document.getElementById('abb-'+i);if(e)e.textContent=fm(gMod(ab.k)+(ab.p?gPrf():0));});}
-function addAb(){D.ab.push({n:'',k:'FOR',p:false});rAb();}
-function delAb(i){D.ab.splice(i,1);rAb();}
-
-var SN=['Base','Tormentato','Arso','Condannato'],SC=['sp0','sp1','sp2','sp3'];
-function rEmbl(){
-  var tb=document.getElementById('etb');tb.innerHTML='';
-  D.em.forEach(function(e,i){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td><input class="cell-input" value="'+e.n+'" placeholder="Nome" onchange="D.em['+i+'].n=this.value"></td>'+
-      '<td><input class="cell-input" value="'+e.b+'" style="width:40px" placeholder="+0" onchange="D.em['+i+'].b=this.value"></td>'+
-      '<td><input class="cell-input" value="'+e.d+'" placeholder="1d6" onchange="D.em['+i+'].d=this.value"></td>'+
-      '<td><span class="stato-pill '+SC[e.s||0]+'" data-s="'+(e.s||0)+'" onclick="cycS(this,'+i+')">'+(SN[e.s||0])+'</span></td>'+
-      '<td><input class="cell-input" value="'+(e.nt||'')+'" placeholder="Note..." onchange="D.em['+i+'].nt=this.value"></td>'+
-      '<td><button class="del-btn" onclick="delEm('+i+')">✕</button></td>';
-    tb.appendChild(tr);
-  });
-}
-function cycS(b,i){var s=(parseInt(b.dataset.s)+1)%4;b.dataset.s=s;D.em[i].s=s;b.textContent=SN[s];b.className='stato-pill '+SC[s];}
-function addEmbl(){D.em.push({n:'',b:'',d:'',s:0,nt:''});rEmbl();}
-function delEm(i){D.em.splice(i,1);rEmbl();}
-
-function rAtk(){
-  var tb=document.getElementById('atb');tb.innerHTML='';
-  D.atk.forEach(function(a,i){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td><input class="cell-input" value="'+a.n+'" placeholder="Nome attacco" onchange="D.atk['+i+'].n=this.value"></td>'+
-      '<td class="bonus-cell click-edit" onclick="edAtk('+i+',\'b\',this)">'+(a.b||'—')+'</td>'+
-      '<td class="click-edit" onclick="edAtk('+i+',\'d\',this)" style="font-size:13px;cursor:pointer">'+(a.d||'—')+'</td>'+
-      '<td class="click-edit" onclick="edAtk('+i+',\'nt\',this)" style="font-size:12px;color:var(--ink3);cursor:pointer">'+(a.nt||'')+'</td>'+
-      '<td><button class="del-btn" onclick="delAtk('+i+')">✕</button></td>';
-    tb.appendChild(tr);
-  });
-}
-function edAtk(i,f,td){
-  var inp=document.createElement('input');inp.value=D.atk[i][f]||'';inp.placeholder='...';
-  inp.style.cssText='background:transparent;border:none;border-bottom:1px solid var(--borderl);font-family:inherit;font-size:inherit;color:var(--ink);width:100%;outline:none;';
-  td.innerHTML='';td.appendChild(inp);inp.focus();
-  inp.onblur=function(){D.atk[i][f]=inp.value;rAtk();};
-  inp.onkeydown=function(e){if(e.key==='Enter')inp.blur();};
-}
-function addAtk(){D.atk.push({n:'',b:'',d:'',nt:''});rAtk();}
-function delAtk(i){D.atk.splice(i,1);rAtk();}
-
-/* MAGIE */
-function rSpells(){
-  // Trucchetti
-  var c0=document.getElementById('sp-0');c0.innerHTML='';
-  (D.spells[0]||[]).forEach(function(s,i){
-    var r=document.createElement('div');r.className='spell-row';
-    r.innerHTML='<input class="spell-name-input" value="'+(s.n||'')+'" placeholder="Nome trucchetto..." onchange="D.spells[0]['+i+'].n=this.value">'+
-      '<button class="del-btn" onclick="delSpell(0,'+i+')">✕</button>';
-    c0.appendChild(r);
-  });
-  if(!(D.spells[0]||[]).length){c0.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;padding:4px 2px;">Nessun trucchetto. Clicca "+ aggiungi".</div>';}
-  // Livelli 1-9
-  var sg=document.getElementById('spell-grid');sg.innerHTML='';
-  for(var lv=1;lv<=9;lv++){
-    var sl=D.slots[lv]||{tot:0,used:0};
-    var spells=D.spells[lv]||[];
-    var box=document.createElement('div');box.className='spell-level';
-    var lvl=lv;
-    var slotsHtml='';
-    for(var s=0;s<Math.max(sl.tot||0,0);s++){
-      slotsHtml+='<div class="sl-slot-dot'+(s<sl.used?' used':'')+'" onclick="toggleSlot('+lvl+','+s+')"></div>';
-    }
-    box.innerHTML='<div class="sl-head">'+
-      '<span class="sl-lbl">Livello '+lv+'</span>'+
-      '<div class="sl-slots" style="display:flex;align-items:center;gap:3px;">'+slotsHtml+
-        '<input type="number" min="0" max="9" value="'+(sl.tot||0)+'" title="Slot totali" '+
-        'style="width:24px;background:transparent;border:none;border-bottom:1px solid rgba(160,120,32,0.3);font-family:Cormorant SC,serif;font-size:11px;color:var(--g);text-align:center;outline:none;margin-left:4px;" '+
-        'onchange="D.slots['+lv+'].tot=parseInt(this.value)||0;rSpells()">'+
-        '<span style="font-size:9px;color:var(--ink3);margin:0 2px">/</span>'+
-        '<button style="font-size:9px;background:rgba(139,0,0,0.15);border:1px solid rgba(139,0,0,0.3);color:#e06060;border-radius:3px;padding:1px 5px;cursor:pointer;" onclick="resetSlots('+lv+')" title="Reset slot">↺</button>'+
-      '</div>'+
-    '</div>'+
-    '<div class="sl-body" id="sp-'+lv+'"></div>'+
-    '<div style="padding:2px 8px 6px;"><button class="add-btn" onclick="addSpell('+lv+')">+ incantesimo</button></div>';
-    sg.appendChild(box);
-    var body=document.getElementById('sp-'+lv);
-    spells.forEach(function(sp,si){
-      var r=document.createElement('div');r.className='spell-row';
-      r.innerHTML='<div class="spell-prep '+(sp.prep?'on':'')+'" onclick="togglePrep('+lvl+','+si+')" title="Preparato"></div>'+
-        '<input class="spell-name-input" value="'+(sp.n||'')+'" placeholder="Nome incantesimo..." onchange="D.spells['+lvl+']['+si+'].n=this.value">'+
-        '<button class="del-btn" onclick="delSpell('+lvl+','+si+')">✕</button>';
-      body.appendChild(r);
-    });
-    if(!spells.length){body.innerHTML='<div style="font-size:10px;color:var(--ink3);font-style:italic;padding:2px;">Nessun incantesimo.</div>';}
-  }
-}
-function addSpell(lv){D.spells[lv]=D.spells[lv]||[];D.spells[lv].push({n:'',prep:false});rSpells();}
-function delSpell(lv,i){D.spells[lv].splice(i,1);rSpells();}
-function togglePrep(lv,i){D.spells[lv][i].prep=!D.spells[lv][i].prep;rSpells();}
-function toggleSlot(lv,idx){
-  var sl=D.slots[lv]||{tot:0,used:0};
-  sl.used=(sl.used===idx+1)?idx:idx+1;
-  D.slots[lv]=sl;rSpells();
-}
-function resetSlots(lv){D.slots[lv].used=0;rSpells();}
-
-/* SPERANZA */
-function rSpe(){
-  var v=parseInt(document.getElementById('f-spe').value)||0;
-  var mx=parseInt(document.getElementById('f-spemax').value)||33;
-  var c=document.getElementById('spe-d');c.innerHTML='';
-  var show=Math.min(mx,50);
-  for(var i=1;i<=show;i++){
-    var d=document.createElement('div');
-    d.className='sdot'+(i<=v?' on':'')+(i<=5?' w':'');
-    (function(idx){d.onclick=function(){document.getElementById('f-spe').value=idx;D.spe=idx;rSpe();};})(i);
-    c.appendChild(d);
-  }
-}
-
-/* RISORSE */
-function rRes(){
-  var c=document.getElementById('res-list');c.innerHTML='';
-  if(!D.res||!D.res.length){c.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;">Nessuna risorsa. Clicca "+ risorsa".</div>';return;}
-  D.res.forEach(function(r,i){
-    var row=document.createElement('div');row.className='res-row';
-    row.innerHTML='<input class="res-name-in" value="'+(r.n||'')+'" placeholder="Nome risorsa" onchange="D.res['+i+'].n=this.value">'+
-      '<input type="number" class="res-cur" value="'+(r.cur||0)+'" min="0" onchange="D.res['+i+'].cur=parseInt(this.value)||0">'+
-      '<span style="color:var(--ink3);font-size:11px">/</span>'+
-      '<input type="number" class="res-max-in" value="'+(r.max||0)+'" min="0" title="Massimo" onchange="D.res['+i+'].max=parseInt(this.value)||0">'+
-      '<button class="del-btn" onclick="delRes('+i+')">✕</button>';
-    c.appendChild(row);
-  });
-}
-function addRes(){D.res=D.res||[];D.res.push({n:'',cur:0,max:0});rRes();}
-function delRes(i){D.res.splice(i,1);rRes();}
-
-/* PRIVILEGI */
-function rPriv(){
-  var c=document.getElementById('pv-l');c.innerHTML='';
-  if(!D.pv||!D.pv.length){c.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;">Nessun tratto. Clicca "+ aggiungi".</div>';return;}
-  D.pv.forEach(function(p,i){
-    var d=document.createElement('div');d.className='priv-item';
-    d.innerHTML='<div style="flex:1">'+
-      '<input class="priv-name-input" placeholder="Nome tratto" value="'+(p.n||'')+'" onchange="D.pv['+i+'].n=this.value">'+
-      '<input class="priv-desc-input" placeholder="Descrizione..." value="'+(p.d||'')+'" onchange="D.pv['+i+'].d=this.value">'+
-      '</div><button class="del-btn" onclick="delPriv('+i+')">✕</button>';
-    c.appendChild(d);
-  });
-}
-function addPriv(){D.pv=D.pv||[];D.pv.push({n:'',d:''});rPriv();}
-function delPriv(i){D.pv.splice(i,1);rPriv();}
-
-function rAll(){rfTS();rfAb();}
-
-/* THEME */
-function setTheme(name,btn){
-  document.body.className='t-'+name;D.theme=name;
-  document.querySelectorAll('.tdot').forEach(b=>b.classList.remove('on'));
-  if(btn)btn.classList.add('on');
-  document.getElementById('cpk').classList.remove('show');
-}
-function togCustom(btn){
-  var p=document.getElementById('cpk');
-  if(p.classList.contains('show')){p.classList.remove('show');}
-  else{p.classList.add('show');document.querySelectorAll('.tdot').forEach(b=>b.classList.remove('on'));btn.classList.add('on');D.theme='custom';applyCustom();}
-}
-function lum(hex,amt){
-  var n=parseInt(hex.replace('#',''),16);
-  var r=Math.min(255,Math.max(0,(n>>16)+amt));
-  var g=Math.min(255,Math.max(0,((n>>8)&0xff)+amt));
-  var b2=Math.min(255,Math.max(0,(n&0xff)+amt));
-  return'#'+[r,g,b2].map(x=>x.toString(16).padStart(2,'0')).join('');
-}
-function applyCustom(){
-  var r=document.getElementById('cp1').value,g=document.getElementById('cp2').value,bg=document.getElementById('cp3').value;
-  var isDark=parseInt(bg.replace('#',''),16)<0x888888;
-  var root=document.body;root.className='';
-  root.style.setProperty('--r',r);root.style.setProperty('--rl',lum(r,20));root.style.setProperty('--rd',lum(r,-30));
-  root.style.setProperty('--g',g);root.style.setProperty('--gl',lum(g,20));
-  root.style.setProperty('--bg',bg);root.style.setProperty('--s1',lum(bg,isDark?8:-8));
-  root.style.setProperty('--s2',lum(bg,isDark?14:-14));root.style.setProperty('--s3',lum(bg,isDark?22:-22));
-  root.style.setProperty('--ink',isDark?'#f0e8d8':'#1a1208');root.style.setProperty('--ink2',isDark?'#c0b090':'#4a3820');
-  root.style.setProperty('--ink3',isDark?'#807060':'#8a7050');root.style.setProperty('--border','rgba(160,120,32,0.18)');
-  root.style.setProperty('--borderl','rgba(160,120,32,0.35)');root.style.setProperty('--panel','rgba(255,255,255,0.03)');
-  root.style.setProperty('--panelh','rgba(255,255,255,0.06)');
-}
-
-/* SAVE/LOAD */
-function collect(){
-  ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
-    var e=document.getElementById('f-'+k);if(e)D[k]=e.value;
-  });
-  D.spe=parseInt(document.getElementById('f-spe').value)||0;
-  D.speMax=parseInt(document.getElementById('f-spemax').value)||33;
-  D.di=document.getElementById('di-d').classList.contains('on');
-  D.spCar=document.getElementById('sp-car').value;
-  D.spCd=document.getElementById('sp-cd').value;
-  D.spBon=document.getElementById('sp-bon').value;
-  D.car.forEach(function(c){var i=document.querySelector('[data-ck="'+c.k+'"]');if(i)c.v=parseInt(i.value)||10;});
-}
-function salva(){
-  collect();
-  var key='inferno_gen_'+(D.nome||'scheda');
-  localStorage.setItem(key,JSON.stringify(D));
-  localStorage.setItem('inferno_gen_last',key);
-  if(window._fbSaveGen){window._fbSaveGen(D);}
-  else{
-    var m=document.getElementById('sv-msg');
-    m.textContent='Salvato ✓';m.classList.add('show');
-    setTimeout(function(){m.classList.remove('show');},2000);
-  }
-}
-
-function nuova(){
-  if(confirm('Creare una nuova scheda vuota?')){
-    var th=D.theme;
-    D={theme:th,nome:'',cls:'',all:'',pec:'',pfx:'',pf:'',ca:'',ini:'',vel:'',prf:'+2',vir:'',viz:'',cr:'',nt:'',spe:33,speMax:33,di:false,spCar:'',spCd:'',spBon:'',
-      car:[{n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},{n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}],
-      ts:[{n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},{n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}],
-      ab:[{n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},{n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},{n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},{n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},{n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},{n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},{n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},{n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}],
-      em:[],atk:[],pv:[],res:[],
-      spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
-      slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}
-    };applyAll();
-  }
-}
-
-function applyAll(){
-  ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
-    var e=document.getElementById('f-'+k);if(e&&D[k]!==undefined)e.value=D[k];
-  });
-  document.getElementById('f-spe').value=D.spe||33;
-  document.getElementById('f-spemax').value=D.speMax||33;
-  if(D.di)document.getElementById('di-d').classList.add('on');
-  else document.getElementById('di-d').classList.remove('on');
-  var sc=document.getElementById('sp-car');if(sc)sc.value=D.spCar||'';
-  var sd=document.getElementById('sp-cd');if(sd)sd.value=D.spCd||'';
-  var sb=document.getElementById('sp-bon');if(sb)sb.value=D.spBon||'';
-  if(!D.spells){D.spells={0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};}
-  if(!D.slots){D.slots={1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}};}
-  if(D.theme&&D.theme!=='custom'){var b=document.querySelector('[data-t="'+D.theme+'"]');setTheme(D.theme,b);}
-  rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();rAll();
-}
-
-// INIT locale
-rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();
-var sk=localStorage.getItem('inferno_gen_last');
-if(sk){var sv=localStorage.getItem(sk);if(sv){try{D=JSON.parse(sv);applyAll();}catch(e){}}}
-window.addEventListener('beforeunload',function(){collect();localStorage.setItem('inferno_gen_'+(D.nome||'scheda'),JSON.stringify(D));});
 </script>
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+<script src="scheda-engine.js"></script>
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
-  authDomain:        "inferno-schede.firebaseapp.com",
-  projectId:         "inferno-schede",
-  storageBucket:     "inferno-schede.firebasestorage.app",
-  messagingSenderId: "368915835108",
-  appId:             "1:368915835108:web:43f8cbc47d5cb1f620a4f1"
-};
+<script type="module" src="firebase-schede.js?v=1"></script>
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-function setStatus(txt, color){
-  var m = document.getElementById('sv-msg');
-  m.textContent = txt;
-  m.style.color = color || 'var(--g)';
-  m.classList.add('show');
-}
-function hideStatus(){
-  setTimeout(function(){ document.getElementById('sv-msg').classList.remove('show'); }, 2500);
-}
-
-// Ogni personaggio ha il suo documento: uid_nomepersonaggio
-function docId(uid){
-  var nome = (window.D && window.D.nome) ? window.D.nome.toLowerCase().replace(/\s+/g,'_') : 'generica';
-  return uid + '_gen_' + nome;
-}
-
-async function fbSaveGen(data){
-  try {
-    const uid = auth.currentUser?.uid;
-    if(!uid){ setStatus('⚠ Non connesso', '#e06060'); hideStatus(); return; }
-    await setDoc(doc(db, 'schede', docId(uid)), {
-      data: JSON.stringify(data),
-      nome: data.nome || '',
-      updatedAt: new Date().toISOString()
-    });
-    setStatus('☁ Salvato ✓', 'var(--g)');
-    hideStatus();
-  } catch(err){
-    console.error(err);
-    setStatus('⚠ Errore salvataggio', '#e06060');
-    hideStatus();
-  }
-}
-window._fbSaveGen = fbSaveGen;
-
-async function fbLoad(uid){
-  try {
-    const id   = docId(uid);
-    const snap = await getDoc(doc(db, 'schede', id));
-    if(snap.exists()){
-      const parsed  = JSON.parse(snap.data().data);
-      const localRaw = localStorage.getItem('inferno_gen_last');
-      const localKey = localRaw ? localStorage.getItem(localRaw) : null;
-      const local    = localKey ? JSON.parse(localKey) : null;
-      const fbTime   = snap.data().updatedAt || '';
-      const useCloud = !local || fbTime > (local._savedAt||'');
-      if(useCloud){
-        window.D = parsed;
-        window.applyAll();
-        setStatus('☁ Caricato dal cloud', 'var(--g)');
-        hideStatus();
-      }
+<script>
+// 4. Avvio l'interfaccia dopo che tutti gli script sono stati caricati
+window.addEventListener('load', function() {
+    if (window.location.search.includes('view=true')) document.body.classList.add('master-view');
+    
+    // Se non è il Master, proviamo a caricare i dati locali (il Cloud arriverà subito dopo)
+    if (!document.body.classList.contains('master-view')) {
+        var sk = localStorage.getItem('inferno_gen_last');
+        if(sk){ 
+            var sv = localStorage.getItem(sk); 
+            if(sv){ try{ D = JSON.parse(sv); window.applyAll(); } catch(e){} } 
+        }
     }
-  } catch(err){
-    console.error('fbLoad error:', err);
-  }
-}
-
-onAuthStateChanged(auth, function(user){
-  if(user){
-    var brand = document.querySelector('.toolbar-brand');
-    if(brand) brand.title = 'UID: ' + user.uid;
-    fbLoad(user.uid);
-  }
 });
-
-signInAnonymously(auth).catch(function(err){
-  console.error('Auth error:', err);
-  setStatus('☁ Offline', '#e06060');
-  hideStatus();
-});
-
-// Autosave ogni 60s
-setInterval(function(){
-  if(auth.currentUser && window.collect && window.D){
-    window.collect();
-    fbSaveGen(window.D);
-  }
-}, 60000);
 </script>
-  <script type="module" src="firebase-schede.js?v=1"></script>
-</body>
 </body>
 </html>
