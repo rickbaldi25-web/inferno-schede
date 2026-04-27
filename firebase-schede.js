@@ -31,15 +31,21 @@ function hideStatus(){
   }, 2500);
 }
 
-// Genera l'ID del documento su Firestore in modo intelligente
+// Legge l'ID della scheda dall'URL o usa un default
 function getDocId(uid) {
-  // Se nell'HTML abbiamo detto che questa è la scheda di Bartolomeo, usa il suo nome fisso
   if (window.SHEET_ID === 'bartolomeo') {
     return uid + '_bartolomeo';
   }
-  // Altrimenti, genera il nome dinamicamente in base al nome inserito dal giocatore
-  let nomePersonaggio = (window.D && window.D.nome) ? window.D.nome.toLowerCase().trim().replace(/\s+/g,'_') : 'vuota';
-  return uid + '_gen_' + nomePersonaggio;
+  
+  // Cerca un parametro "?id=" nell'indirizzo web
+  const urlParams = new URLSearchParams(window.location.search);
+  const sheetId = urlParams.get('id');
+  
+  if (sheetId) {
+    return uid + '_' + sheetId; // Es: uid_123456789
+  }
+  
+  return uid + '_gen_default';
 }
 
 // Funzione globale di salvataggio
@@ -49,6 +55,7 @@ async function fbSave(data){
     if(!uid){ setStatus('⚠ Non connesso', '#e06060'); hideStatus(); return; }
     
     await setDoc(doc(db, 'schede', getDocId(uid)), {
+      uid: uid, // AGGIUNTA FONDAMENTALE: ci serve per trovare le schede dell'utente dopo!
       data: JSON.stringify(data),
       nome: data.nome || 'Smarrito',
       updatedAt: new Date().toISOString()
