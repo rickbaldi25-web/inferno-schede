@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inferno — Dante's Guide to Hell</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --r:#8B0000;--rl:#b01010;--g:#A07820;--gl:#c49830;
+  --bg:#080706;--s1:#100e0c;
+  --ink:#f0e8d8;--ink2:#c8b898;--ink3:#7a6a58;
+  --border:rgba(160,120,32,0.15);
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* EMBERS */
+.embers { position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden; }
+.ember {
+  position:absolute;border-radius:50%;
+  animation:rise var(--dur) ease-in infinite;
+  animation-delay:var(--delay);
+  left:var(--x);bottom:-10px;opacity:0;
+}
+@keyframes rise {
+  0%   { transform:translateY(0) translateX(0) scale(1);opacity:0; }
+  10%  { opacity:0.85; }
+  60%  { opacity:0.35; }
+  100% { transform:translateY(-65vh) translateX(var(--drift)) scale(0);opacity:0; }
+}
+
+/* HERO */
+.hero {
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 40px;
+  text-align:center;
+}
+.hero-glow {
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:700px;height:500px;
+  background:radial-gradient(ellipse,rgba(139,0,0,0.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow {
+  font-size:10px;font-weight:500;
+  letter-spacing:5px;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:28px;
+  animation:fadein .8s ease both;
+}
+.hero-title {
+  font-family:'Cormorant SC',serif;
+  font-size:clamp(72px,10vw,128px);
+  font-weight:300;color:var(--g);
+  letter-spacing:14px;text-transform:uppercase;
+  line-height:0.92;
+  text-shadow:0 0 100px rgba(160,120,32,0.2),0 0 200px rgba(139,0,0,0.1);
+  animation:fadein .8s ease .15s both;
+  position:relative;z-index:1;
+}
+.hero-sub {
+  display:block;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(13px,1.8vw,18px);
+  font-weight:300;font-style:italic;
+  letter-spacing:6px;color:var(--ink3);
+  margin-top:14px;
+}
+.hero-divider {
+  width:1px;height:72px;
+  background:linear-gradient(to bottom,transparent,var(--g),transparent);
+  margin:52px auto;
+  animation:fadein .8s ease .3s both;
+}
+.hero-desc {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(16px,2vw,20px);
+  font-weight:300;font-style:italic;
+  color:var(--ink2);line-height:1.85;
+  max-width:540px;
+  animation:fadein .8s ease .45s both;
+}
+.scroll-hint {
+  margin-top:52px;
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--ink3);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  animation:fadein .8s ease .9s both;
+}
+.scroll-hint::after {
+  content:'';width:1px;height:32px;
+  background:linear-gradient(to bottom,var(--ink3),transparent);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* CARDS */
+.cards-section {
+  position:relative;z-index:1;
+  padding:0 40px 100px;
+  max-width:1000px;margin:0 auto;
+}
+.cards-label {
+  font-size:10px;font-weight:500;
+  letter-spacing:4px;text-transform:uppercase;
+  color:var(--ink3);text-align:center;
+  margin-bottom:48px;
+  animation:fadein .8s ease .6s both;
+}
+.cards-grid {
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
+.scheda-card {
+  position:relative;
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:40px 36px;
+  text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;gap:14px;
+  overflow:hidden;
+  transition:border-color .3s,transform .3s,box-shadow .3s;
+  animation:fadein .8s ease .75s both;
+}
+.scheda-card:nth-child(2) { animation-delay:.9s; }
+.scheda-card::before {
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 25% 25%,rgba(139,0,0,0.07) 0%,transparent 65%);
+  opacity:0;transition:opacity .3s;
+}
+.scheda-card:hover::before { opacity:1; }
+.scheda-card:hover {
+  border-color:rgba(160,120,32,0.45);
+  transform:translateY(-5px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+/* top accent line */
+.scheda-card::after {
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,var(--r),var(--g),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.scheda-card:hover::after { opacity:1; }
+
+.card-num {
+  font-family:'Cormorant SC',serif;
+  font-size:10px;letter-spacing:3px;color:var(--r);
+  text-transform:uppercase;
+}
+.card-name {
+  font-family:'Cormorant SC',serif;
+  font-size:clamp(24px,3vw,36px);
+  font-weight:400;color:var(--ink);
+  letter-spacing:2px;line-height:1.05;
+}
+.card-subtitle {
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;color:var(--g);font-style:italic;
+}
+.card-desc {
+  font-size:12px;color:var(--ink3);
+  line-height:1.7;flex:1;
+}
+.card-tags {
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;
+}
+.tag {
+  font-size:9px;font-weight:500;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 10px;
+  border:1px solid rgba(160,120,32,0.2);
+  border-radius:20px;color:var(--ink3);
+}
+.card-cta {
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:500;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--g);margin-top:10px;
+  transition:gap .2s;
+}
+.card-cta::after { content:'→';font-size:16px;transition:transform .2s; }
+.scheda-card:hover .card-cta { gap:14px; }
+.scheda-card:hover .card-cta::after { transform:translateX(4px); }
+
+/* QUOTE */
+.quote-section {
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:80px 40px 60px;
+  max-width:680px;margin:0 auto;
+  text-align:center;
+}
+.quote-text {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(17px,2.2vw,22px);
+  font-weight:300;font-style:italic;
+  color:var(--ink2);line-height:1.8;
+  margin-bottom:22px;
+}
+.quote-source {
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--ink3);
+}
+
+/* FOOTER */
+footer {
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:20px 40px;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  max-width:1000px;margin:0 auto;
+}
+.footer-brand {
+  font-family:'Cormorant SC',serif;
+  font-size:13px;letter-spacing:3px;
+  color:var(--g);text-transform:uppercase;
+}
+.footer-links { display:flex;gap:24px; }
+.footer-link {
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink3);
+  text-decoration:none;transition:color .2s;
+}
+.footer-link:hover { color:var(--ink2); }
+
+@keyframes fadein {
+  from { opacity:0;transform:translateY(14px); }
+  to   { opacity:1;transform:translateY(0); }
+}
+
+@media(max-width:640px){
+  .hero { padding:40px 24px; }
+  .cards-section { padding:0 20px 80px; }
+  .cards-grid { grid-template-columns:1fr; }
+  .scheda-card { padding:28px 22px; }
+  footer { flex-direction:column;gap:16px;text-align:center;padding:20px 24px; }
+  .footer-links { justify-content:center; }
+  .hero-divider { height:48px;margin:36px auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="embers" id="embers"></div>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <p class="hero-eyebrow">Dante Alighieri · Divina Commedia</p>
+  <h1 class="hero-title">
+    Inferno
+    <span class="hero-sub">Dante's Guide to Hell</span>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-desc">
+    Ogni Smarrito è un vivente che raggiunge l'Inferno<br>
+    prima della propria morte, armato soltanto<br>
+    della propria Speranza e di una scintilla di Divina Ispirazione.
+  </p>
+  <div class="scroll-hint">Scegli la tua scheda</div>
+</section>
+
+<section class="cards-section">
+  <p class="cards-label">Schede Personaggio</p>
+  <div class="cards-grid">
+
+    <a class="scheda-card" href="Bartolomeo_Scheda.html">
+      <span class="card-num">Scheda 01</span>
+      <h2 class="card-name">Bartolomeo</h2>
+      <p class="card-subtitle">Lo Schiavo · Monaco Smarrito · Livello 2</p>
+      <p class="card-desc">
+        Ex soldato condannato all'Antinferno per ignavia. Scheda precompilata
+        con emblemi delle Catene, tracker sciame di vespe e percorso di redenzione.
+      </p>
+      <div class="card-tags">
+        <span class="tag">Monaco</span>
+        <span class="tag">Punti Ki</span>
+        <span class="tag">Catene</span>
+        <span class="tag">Vespe</span>
+      </div>
+      <div class="card-cta">Apri scheda</div>
+    </a>
+
+    <a class="scheda-card" href="Inferno_Scheda_Generica.html">
+      <span class="card-num">Scheda 02</span>
+      <h2 class="card-name">Smarrito</h2>
+      <p class="card-subtitle">Scheda Generica · Qualsiasi Archetipo</p>
+      <p class="card-desc">
+        Scheda vuota e completamente personalizzabile. Supporta incantesimi
+        con slot per livello, risorse custom e tutti e dodici gli archetipi di Inferno.
+      </p>
+      <div class="card-tags">
+        <span class="tag">Generica</span>
+        <span class="tag">Magie</span>
+        <span class="tag">Slot incantesimo</span>
+      </div>
+      <div class="card-cta">Apri scheda</div>
+    </a>
+
+  </div>
+</section>
+
+<div class="quote-section">
+  <p class="quote-text">
+    "Nel mezzo del cammin di nostra vita<br>
+    mi ritrovai per una selva oscura,<br>
+    ché la diritta via era smarrita."
+  </p>
+  <p class="quote-source">Dante Alighieri · Inferno, Canto I, 1–3</p>
+</div>
+
+<footer>
+  <span class="footer-brand">Inferno</span>
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/rickbaldi25-web/inferno-schede" target="_blank">GitHub</a>
+    <a class="footer-link" href="Bartolomeo_Scheda.html">Bartolomeo</a>
+    <a class="footer-link" href="Inferno_Scheda_Generica.html">Generica</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const c = document.getElementById('embers');
+  const colors = ['#c49830','#A07820','#8B0000','#b01010','#d4a830'];
+  for(let i = 0; i < 30; i++){
+    const e = document.createElement('div');
+    e.className = 'ember';
+    const size = 1 + Math.random() * 3;
+    e.style.cssText = [
+      `--x:${Math.random()*100}%`,
+      `--dur:${5 + Math.random()*9}s`,
+      `--delay:${Math.random()*12}s`,
+      `--drift:${(Math.random()-.5)*100}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      `background:${colors[Math.floor(Math.random()*colors.length)]}`,
+      `box-shadow:0 0 ${size*2}px ${colors[0]}`
+    ].join(';');
+    c.appendChild(e);
+  }
+})();
+</script>
+</body>
+</html>
