@@ -18,27 +18,28 @@
 <body class="t-ember">
 
 <div class="toolbar">
-  <span class="toolbar-brand">Inferno</span>
+  <a href="index.html" class="toolbar-brand" style="text-decoration: none; cursor: pointer;">Inferno</a>
+  
   <div class="tb-sep"></div>
+  
   <div class="theme-dots">
-    <div class="tdot on" data-t="ember" onclick="setTheme('ember',this)"></div>
-    <div class="tdot" data-t="abyss"  onclick="setTheme('abyss',this)"></div>
-    <div class="tdot" data-t="ash"    onclick="setTheme('ash',this)"></div>
-    <div class="tdot" data-t="venom"  onclick="setTheme('venom',this)"></div>
-    <div class="tdot" data-t="light"  onclick="setTheme('light',this)"></div>
-    <div class="tdot" data-t="custom" onclick="togCustom(this)"></div>
+    <div class="tdot on" data-t="ember" title="Ember" onclick="setTheme('ember',this)"></div>
+    <div class="tdot" data-t="abyss"  title="Abyss"  onclick="setTheme('abyss',this)"></div>
+    <div class="tdot" data-t="ash"    title="Ash"    onclick="setTheme('ash',this)"></div>
+    <div class="tdot" data-t="venom"  title="Venom"  onclick="setTheme('venom',this)"></div>
+    <div class="tdot" data-t="light"  title="Light"  onclick="setTheme('light',this)"></div>
+    <div class="tdot" data-t="custom" title="Custom" onclick="togCustom(this)"></div>
   </div>
+  
   <div class="cpk" id="cpk">
     <div class="cpk-g"><span class="cpk-l">Accento</span><input type="color" id="cp1" value="#8B0000" oninput="applyCustom()"></div>
     <div class="cpk-g"><span class="cpk-l">Oro</span><input type="color" id="cp2" value="#A07820" oninput="applyCustom()"></div>
     <div class="cpk-g"><span class="cpk-l">Sfondo</span><input type="color" id="cp3" value="#0a0908" oninput="applyCustom()"></div>
   </div>
+  
   <div class="tb-spacer"></div>
-  <button class="tb-btn" onclick="exportJSON()">↓ <span>Esporta</span></button>
-  <button class="tb-btn" onclick="document.getElementById('fimp').click()">↑ <span>Importa</span></button>
-  <input type="file" id="fimp" accept=".json" style="display:none" onchange="importJSON(event)">
-  <button class="tb-btn" onclick="nuova()">✦ <span>Nuovo</span></button>
-  <button class="tb-btn" onclick="ripr()">↩ <span>Ripristina</span></button>
+  
+  <button class="tb-btn" onclick="window.location.href='index.html'">⌂ <span>Home</span></button>
   <button class="tb-btn primary" onclick="salva()">Salva</button>
   <span class="save-msg" id="sv-msg">Salvato ✓</span>
 </div>
@@ -500,10 +501,7 @@ function salva(){
     setTimeout(function(){m.classList.remove('show');},2000);
   }
 }
-function ripr(){
-  var key=localStorage.getItem('inferno_gen_last');
-  if(key){var r=localStorage.getItem(key);if(r){try{D=JSON.parse(r);applyAll();}catch(e){}}}
-}
+
 function nuova(){
   if(confirm('Creare una nuova scheda vuota?')){
     var th=D.theme;
@@ -517,18 +515,7 @@ function nuova(){
     };applyAll();
   }
 }
-function exportJSON(){
-  collect();
-  var b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download=(D.nome||'Smarrito')+'_Inferno.json';a.click();
-}
-function importJSON(e){
-  var f=e.target.files[0];if(!f)return;
-  var r=new FileReader();
-  r.onload=function(ev){try{D=JSON.parse(ev.target.result);applyAll();}catch(err){alert('File non valido');}};
-  r.readAsText(f);e.target.value='';
-}
+
 function applyAll(){
   ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
     var e=document.getElementById('f-'+k);if(e&&D[k]!==undefined)e.value=D[k];
