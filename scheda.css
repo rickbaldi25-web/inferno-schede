@@ -14,9 +14,7 @@
   --radius:6px; --radiusl:10px;
 }
 .t-ember{--r:#8B0000;--rl:#a52020;--rd:#500000;--g:#A07820;--gl:#c49830;--bg:#0a0908;--s1:#141210;--s2:#1c1916;--s3:#252220;--ink:#f0e8d8;--ink2:#c8baa8;--ink3:#8a7a68;--border:rgba(160,120,32,0.18);--borderl:rgba(160,120,32,0.35);}
-.t-abyss{--r:#1a2a6c;--rl:#2a3a8c;--rd:#0d1540;--g:#4a7a9b;--gl:#5a9abf;--bg:#060810;--s1:#0e1020;--s2:#161828;--s3:#1e2030;--ink:#d8e4f0;--ink2:#a0b4c8;--ink3:#607080;--border:rgba(74,122,155,0.2);--borderl:rgba(74,122,155,0.4);}
 .t-ash{--r:#2a3530;--rl:#3a4840;--rd:#151c18;--g:#607060;--gl:#809080;--bg:#080a09;--s1:#111413;--s2:#181c1a;--s3:#202420;--ink:#dce8dc;--ink2:#a0b0a0;--ink3:#607060;--border:rgba(96,112,96,0.2);--borderl:rgba(96,112,96,0.4);}
-.t-venom{--r:#1a5c20;--rl:#247a2c;--rd:#0c3010;--g:#8a8a20;--gl:#aaaa30;--bg:#060908;--s1:#0e1210;--s2:#151a16;--s3:#1c221e;--ink:#d8f0d8;--ink2:#a0c8a0;--ink3:#608060;--border:rgba(138,138,32,0.2);--borderl:rgba(138,138,32,0.38);}
 .t-light{--r:#7B0000;--rl:#9B1111;--rd:#4A0000;--g:#8a6010;--gl:#aa8020;--bg:#f5f0e8;--s1:#ede6d8;--s2:#e0d8c8;--s3:#d0c8b0;--ink:#1a1208;--ink2:#4a3820;--ink3:#8a7050;--border:rgba(122,80,0,0.15);--borderl:rgba(122,80,0,0.3);--panel:rgba(0,0,0,0.03);--panelh:rgba(0,0,0,0.06);}
 
 /* ── REGOLE BASE E TIPOGRAFIA ── */
@@ -43,9 +41,7 @@ body {
 .tdot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform .15s, border-color .15s; flex-shrink: 0; }
 .tdot.on { transform: scale(1.25); border-color: rgba(255,255,255,0.7); }
 .tdot[data-t="ember"]{background:radial-gradient(circle at 35% 35%,#c44,#500);}
-.tdot[data-t="abyss"]{background:radial-gradient(circle at 35% 35%,#4a7,#0a1a4c);}
 .tdot[data-t="ash"]{background:radial-gradient(circle at 35% 35%,#607060,#101410);}
-.tdot[data-t="venom"]{background:radial-gradient(circle at 35% 35%,#4a8a20,#061008);}
 .tdot[data-t="light"]{background:radial-gradient(circle at 35% 35%,#d4c090,#f5f0e8);border-color:rgba(0,0,0,0.2);}
 .tdot[data-t="custom"]{background:conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);}
 
@@ -291,7 +287,7 @@ input[type="color"] { width: 20px; height: 20px; border: none; border-radius: 3p
   .hero-right { align-items: flex-start; }
   .hero-center { order: -1; text-align: center; }
   .hero-title { font-size: 32px; letter-spacing: 2px; word-wrap: break-word; }
-  .field-input { width: 100% !important; max-width: 100%; font-size: 15px; }
+  .field-input { max-width: 100%; font-size: 15px; }
 
   .vitals { padding: 0; border-left: none; border-right: none; }
   .vitals-inner { grid-template-columns: repeat(2, 1fr); width: 100%; }
