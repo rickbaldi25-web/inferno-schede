@@ -478,23 +478,23 @@ onAuthStateChanged(auth, async (user) => {
     const querySnapshot = await getDocs(q);
     
     querySnapshot.forEach((docSnap) => {
-      if (docSnap.id.includes('bartolomeo') && user.email !== "rickbaldi25@gmail.com") return;
+      // Se il documento è Bartolomeo, ignoralo! (Evita il doppione, perché il bottone c'è già sopra)
+      if (docSnap.id.includes('bartolomeo')) return;
 
       const info = docSnap.data();
       const idScheda = docSnap.id.split('_').pop();
-      const isBart = docSnap.id.includes('bartolomeo');
-      const link = isBart ? 'Bartolomeo_Scheda.html' : `Inferno_Scheda_Generica.html?id=${idScheda}`;
+      const link = `Inferno_Scheda_Generica.html?id=${idScheda}`;
 
       const card = document.createElement('a');
       card.className = 'scheda-card';
       card.href = link;
       
-      // Aggiungiamo il tasto X solo se NON è Bartolomeo
-      const deleteBtn = isBart ? '' : `<button class="del-card-btn" title="Elimina Personaggio" onclick="cancellaScheda('${docSnap.id}', event)">✕</button>`;
+      // Essendo schede generiche, hanno tutte il tasto elimina
+      const deleteBtn = `<button class="del-card-btn" title="Elimina Personaggio" onclick="cancellaScheda('${docSnap.id}', event)">✕</button>`;
 
       card.innerHTML = `
         ${deleteBtn}
-        <span class="card-num">${isBart ? 'Speciale' : 'Smarrito'}</span>
+        <span class="card-num">Smarrito</span>
         <h2 class="card-name">${info.nome}</h2> 
         <div class="card-cta">Apri Viaggio</div>
       `;
