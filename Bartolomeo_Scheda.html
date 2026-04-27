@@ -415,12 +415,13 @@ window.rKiAb = function(){
     var row=document.createElement('div');row.className='ki-ab-row';
     row.innerHTML=
       '<input class="ki-cost-input" value="'+(a.costo||'1 Ki')+'" onchange="D.kiAb['+i+'].costo=this.value">'+
-      '<input class="ki-desc-input" value="'+(a.desc||'')+'" onchange="D.kiAb['+i+'].desc=this.value">'+
+      // Qui abbiamo inserito la textarea magica auto-adattante
+      '<textarea rows="1" class="ki-desc-input auto-wrap" placeholder="Descrizione abilità..." oninput="window.autoResize(this)" onchange="D.kiAb['+i+'].desc=this.value" style="flex:1; resize:none; overflow:hidden; font-size:12px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); outline:none; padding:2px 0;">'+(a.desc||'')+'</textarea>'+
       '<button class="del-btn" style="opacity:0.5" onclick="window.delKiAb('+i+')">✕</button>';
     c.appendChild(row);
   });
 };
-window.addKiAb = function(){D.kiAb=D.kiAb||[];D.kiAb.push({costo:'1 Ki',desc:''});window.rKiAb();};
+window.addKiAb = function(){D.kiAb=D.kiAb||[];D.kiAb.push({costo:'1 Ki',desc:''});window.rKiAb(); window.resizeAllTextareas();};
 window.delKiAb = function(i){D.kiAb.splice(i,1);window.rKiAb();};
 
 // C. Logica specifica: Sciame
@@ -474,6 +475,7 @@ window.applyAll = function(){
   
   window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpe(); window.rPriv(); window.rAll();
   window.rKi(); window.updScBar(); 
+  window.resizeAllTextareas();
 };
 
 window.addEventListener('load', function() {

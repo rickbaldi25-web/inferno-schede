@@ -3,6 +3,25 @@
  * Gestisce calcoli, rendering UI, temi e funzioni speciali (PDF, Avatar, Master View)
  */
 
+// --- TOOLTIP GLOBALE ---
+// Mostra il testo completo come nuvoletta quando passi il mouse
+document.addEventListener('mouseover', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        e.target.title = e.target.value;
+    }
+});
+
+// --- FUNZIONI CAMPI ELASTICI (Auto-Resize) ---
+window.autoResize = function(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+};
+window.resizeAllTextareas = function() {
+    setTimeout(() => {
+        document.querySelectorAll('textarea.auto-wrap').forEach(ta => window.autoResize(ta));
+    }, 50); // Piccolo ritardo per assicurarsi che il DOM sia disegnato
+};
+
 // --- UTILITY ---
 window.togMob = (t) => { t.classList.toggle('open'); t.nextElementSibling.classList.toggle('open'); };
 window.fm = (n) => (n >= 0 ? '+' : '') + n;
@@ -80,13 +99,13 @@ window.rEmbl = () => {
             '<td><input class="cell-input" value="' + e.b + '" style="width:40px" placeholder="+0" onchange="D.em[' + i + '].b=this.value"></td>' +
             '<td><input class="cell-input" value="' + e.d + '" placeholder="1d6" onchange="D.em[' + i + '].d=this.value"></td>' +
             '<td><span class="stato-pill ' + SC[e.s || 0] + '" data-s="' + (e.s || 0) + '" onclick="cycS(this,' + i + ')">' + (SN[e.s || 0]) + '</span></td>' +
-            '<td><input class="cell-input" value="' + (e.nt || '') + '" placeholder="Note..." onchange="D.em[' + i + '].nt=this.value"></td>' +
+            '<td><textarea rows="1" class="cell-input auto-wrap" placeholder="Note..." oninput="window.autoResize(this)" onchange="D.em[' + i + '].nt=this.value" style="resize:none; overflow:hidden; background:transparent; border:none; color:inherit; font-family:inherit; font-size:inherit; width:100%; outline:none; padding:2px 0;">' + (e.nt || '') + '</textarea></td>' +
             '<td><button class="del-btn" onclick="delEm(' + i + ')">✕</button></td>';
         tb.appendChild(tr);
     });
 };
 window.cycS = (b, i) => { var s = (parseInt(b.dataset.s) + 1) % 4; b.dataset.s = s; D.em[i].s = s; b.textContent = SN[s]; b.className = 'stato-pill ' + SC[s]; };
-window.addEmbl = () => { D.em.push({ n: '', b: '', d: '', s: 0, nt: '' }); window.rEmbl(); };
+window.addEmbl = () => { D.em.push({ n: '', b: '', d: '', s: 0, nt: '' }); window.rEmbl(); window.resizeAllTextareas(); };
 window.delEm = (i) => { D.em.splice(i, 1); window.rEmbl(); };
 
 window.rAtk = () => {
@@ -96,22 +115,28 @@ window.rAtk = () => {
         tr.innerHTML = '<td><input class="cell-input" value="' + a.n + '" placeholder="Nome attacco" onchange="D.atk[' + i + '].n=this.value"></td>' +
             '<td class="bonus-cell click-edit" onclick="edAtk(' + i + ',\'b\',this)">' + (a.b || '—') + '</td>' +
             '<td class="click-edit" onclick="edAtk(' + i + ',\'d\',this)" style="font-size:13px;cursor:pointer">' + (a.d || '—') + '</td>' +
-            '<td class="click-edit" onclick="edAtk(' + i + ',\'nt\',this)" style="font-size:12px;color:var(--ink3);cursor:pointer">' + (a.nt || '') + '</td>' +
+            '<td class="click-edit" onclick="edAtk(' + i + ',\'nt\',this)" style="font-size:12px;color:var(--ink3);cursor:pointer;white-space:pre-wrap;">' + (a.nt || '') + '</td>' +
             '<td><button class="del-btn" onclick="delAtk(' + i + ')">✕</button></td>';
         tb.appendChild(tr);
     });
 };
 window.edAtk = (i, f, td) => {
-    var inp = document.createElement('input'); inp.value = D.atk[i][f] || ''; inp.placeholder = '...';
-    inp.style.cssText = 'background:transparent;border:none;border-bottom:1px solid var(--borderl);font-family:inherit;font-size:inherit;color:var(--ink);width:100%;outline:none;';
-    td.innerHTML = ''; td.appendChild(inp); inp.focus();
-    inp.onblur = function () { D.atk[i][f] = inp.value; window.rAtk(); };
-    inp.onkeydown = function (e) { if (e.key === 'Enter') inp.blur(); };
+    var inp = document.createElement('textarea');
+    inp.rows = 1;
+    inp.value = D.atk[i][f] || ''; inp.placeholder = '...';
+    inp.className = 'auto-wrap';
+    inp.style.cssText = 'background:transparent;border:none;border-bottom:1px solid var(--borderl);font-family:inherit;font-size:inherit;color:var(--ink);width:100%;outline:none;resize:none;overflow:hidden;padding:0;';
+    td.innerHTML = ''; td.appendChild(inp);
+    window.autoResize(inp);
+    inp.focus();
+    inp.oninput = function() { window.autoResize(this); };
+    inp.onblur = function () { D.atk[i][f] = inp.value; window.rAtk(); window.resizeAllTextareas(); };
+    inp.onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); inp.blur(); } }; // Premi Invio per salvare, Shift+Invio per andare a capo
 };
 window.addAtk = () => { D.atk.push({ n: '', b: '', d: '', nt: '' }); window.rAtk(); };
 window.delAtk = (i) => { D.atk.splice(i, 1); window.rAtk(); };
 
-// --- MAGIE (Versione con Descrizione) ---
+// --- MAGIE ---
 window.rSpells = () => {
     var c0 = document.getElementById('sp-0'); if (!c0) return; c0.innerHTML = '';
     (D.spells[0] || []).forEach(function (s, i) {
@@ -121,7 +146,7 @@ window.rSpells = () => {
             '<input class="spell-name-input" value="' + (s.n || '') + '" placeholder="Nome trucchetto..." onchange="D.spells[0][' + i + '].n=this.value">' +
             '<button class="del-btn" onclick="window.delSpell(0,' + i + ')">✕</button>' +
         '</div>' +
-        '<input class="spell-desc-input" value="' + (s.d || '') + '" placeholder="Effetto del trucchetto..." onchange="D.spells[0][' + i + '].d=this.value" style="font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:4px; outline:none; font-style:italic;">';
+        '<textarea rows="1" class="spell-desc-input auto-wrap" placeholder="Effetto del trucchetto..." oninput="window.autoResize(this)" onchange="D.spells[0][' + i + '].d=this.value" style="resize:none; overflow:hidden; font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:4px; outline:none; font-style:italic; width:calc(100% - 8px); padding:2px 0;">' + (s.d || '') + '</textarea>';
         c0.appendChild(r);
     });
     
@@ -139,10 +164,10 @@ window.rSpells = () => {
         box.innerHTML = '<div class="sl-head" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--borderl); margin-bottom:6px;">' +
             '<span class="sl-lbl" style="white-space:nowrap; font-size:11px; color:var(--g); letter-spacing:1px;">Livello ' + lv + '</span>' +
             '<div class="sl-slots" style="display:flex; align-items:center; gap:4px;">' + slotsHtml +
-                '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" ' +
+                '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" title="Slot totali" ' +
                 'style="width:24px; background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); font-family:\'Cormorant SC\',serif; font-size:14px; color:var(--g); text-align:center; outline:none;" ' +
                 'onchange="D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
-                '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')">↺</button>' +
+                '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')" title="Reset slot">↺</button>' +
             '</div>' +
         '</div>' +
         '<div class="sl-body" id="sp-' + lv + '"></div>' +
@@ -158,14 +183,12 @@ window.rSpells = () => {
                 '<input class="spell-name-input" value="' + (sp.n || '') + '" onchange="D.spells[' + lvl + '][' + si + '].n=this.value" placeholder="Nome incantesimo...">' +
                 '<button class="del-btn" onclick="window.delSpell(' + lvl + ',' + si + ')">✕</button>' +
             '</div>' +
-            '<input class="spell-desc-input" value="' + (sp.d || '') + '" onchange="D.spells[' + lvl + '][' + si + '].d=this.value" placeholder="Descrizione effetto..." style="font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:24px; outline:none; font-style:italic;">';
+            '<textarea rows="1" class="spell-desc-input auto-wrap" placeholder="Descrizione effetto..." oninput="window.autoResize(this)" onchange="D.spells[' + lvl + '][' + si + '].d=this.value" style="resize:none; overflow:hidden; font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:24px; outline:none; font-style:italic; width:calc(100% - 24px); padding:2px 0;">' + (sp.d || '') + '</textarea>';
             body.appendChild(r);
         });
     }
 };
-
-
-window.addSpell = (lv) => { D.spells[lv] = D.spells[lv] || []; D.spells[lv].push({ n: '', prep: false }); window.rSpells(); };
+window.addSpell = (lv) => { D.spells[lv] = D.spells[lv] || []; D.spells[lv].push({ n: '', prep: false }); window.rSpells(); window.resizeAllTextareas(); };
 window.delSpell = (lv, i) => { D.spells[lv].splice(i, 1); window.rSpells(); };
 window.togglePrep = (lv, i) => { D.spells[lv][i].prep = !D.spells[lv][i].prep; window.rSpells(); };
 window.toggleSlot = (lv, idx) => { var sl = D.slots[lv] || { tot: 0, used: 0 }; sl.used = (sl.used === idx + 1) ? idx : idx + 1; D.slots[lv] = sl; window.rSpells(); };
@@ -201,12 +224,12 @@ window.rPriv = () => {
     (D.pv || []).forEach(function (p, i) {
         var d = document.createElement('div'); d.className = 'priv-item';
         d.innerHTML = '<div style="flex:1"><input class="priv-name-input" value="' + (p.n || '') + '" onchange="D.pv[' + i + '].n=this.value">' +
-            '<input class="priv-desc-input" value="' + (p.d || '') + '" onchange="D.pv[' + i + '].d=this.value"></div>' +
+            '<textarea rows="1" class="priv-desc-input auto-wrap" placeholder="Descrizione..." oninput="window.autoResize(this)" onchange="D.pv[' + i + '].d=this.value" style="resize:none; overflow:hidden; width:100%; font-family:inherit; font-size:inherit; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid var(--borderl); outline:none; margin-top:4px; padding:2px 0;">' + (p.d || '') + '</textarea></div>' +
             '<button class="del-btn" onclick="delPriv(' + i + ')">✕</button>';
         c.appendChild(d);
     });
 };
-window.addPriv = () => { D.pv = D.pv || []; D.pv.push({ n: '', d: '' }); window.rPriv(); };
+window.addPriv = () => { D.pv = D.pv || []; D.pv.push({ n: '', d: '' }); window.rPriv(); window.resizeAllTextareas(); };
 window.delPriv = (i) => { D.pv.splice(i, 1); window.rPriv(); };
 
 window.rAll = () => { window.rfTS(); window.rfAb(); };
@@ -265,26 +288,20 @@ window.applyAll = () => {
     if (D.di) document.getElementById('di-d').classList.add('on');
     document.getElementById('sp-car').value = D.spCar || ''; document.getElementById('sp-cd').value = D.spCd || ''; document.getElementById('sp-bon').value = D.spBon || '';
     if (D.theme && D.theme !== 'custom') { var b = document.querySelector('[data-t="' + D.theme + '"]'); window.setTheme(D.theme, b); }
+    
     window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpells(); window.rSpe(); window.rRes(); window.rPriv(); window.rAll();
+    window.resizeAllTextareas(); // Chiamata magica che adatta tutto in altezza appena si apre la scheda
 };
 
 // --- SPECIAL FEATURES ---
 window.copiaLinkMaster = () => {
-    // Puliamo l'URL attuale da eventuali parametri di visualizzazione esistenti
     let url = window.location.href.split('&view=true')[0].split('?view=true')[0];
-    
-    // Decidiamo se usare ? o &
     let joiner = url.includes('?') ? '&' : '?';
-    
-    // Se siamo nella scheda generica ma non c'è un ID, ne mettiamo uno di fallback
     if (window.location.pathname.includes('Generica') && !url.includes('id=')) {
         url += joiner + 'id=default';
         joiner = '&';
     }
-    
-    const masterUrl = url + joiner + 'view=true';
-    
-    navigator.clipboard.writeText(masterUrl).then(() => {
+    navigator.clipboard.writeText(url + joiner + 'view=true').then(() => {
         alert("Link Master Copiato! Inviandolo al Master, lui vedrà la scheda senza poterla modificare.");
     });
 };
