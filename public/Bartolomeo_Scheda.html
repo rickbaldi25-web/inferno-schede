@@ -5,7 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Bartolomeo</title>
-
+<link rel="icon" type="image/png" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0a0908">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,6 +42,7 @@
   <div class="tb-spacer"></div>
   
 <button class="tb-btn" onclick="window.location.href='/'">⌂ <span>Home</span></button>
+   <button class="tb-btn primary" onclick="salva()">Salva</button>
   <span class="save-msg" id="sv-msg">Salvato ✓</span>
 </div>
 
@@ -452,11 +455,17 @@ window.collect = function(){
 
 window.salva = function(){
   window.collect();
-  localStorage.setItem('inf_bart_v4',JSON.stringify(D));
-  if(typeof fbSave !== 'undefined'){ fbSave(D); }
-  else {
+  D._savedAt = new Date().toISOString(); // Imposta l'orario di salvataggio
+  
+  // Salva localmente come backup
+  localStorage.setItem('inf_bart_v4', JSON.stringify(D));
+  
+  // Invia a Firebase (che ora aggiornerà tutto correttamente)
+  if(typeof fbSave !== 'undefined'){ 
+    fbSave(D); 
+  } else {
     var m=document.getElementById('sv-msg');
-    m.textContent='Salvato ✓';m.classList.add('show');
+    m.textContent='Salvato ✓'; m.classList.add('show');
     setTimeout(function(){m.classList.remove('show');},2000);
   }
 };
@@ -465,6 +474,32 @@ window.applyAll = function(){
   ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
     var e=document.getElementById('f-'+k);if(e&&D[k]!==undefined)e.value=D[k];
   });
+
+  // --- HEAL AUTOMATICO PER BARTOLOMEO ---
+  // Inserendo la cura qui, anche se Firebase carica liste vuote, verranno rigenerate!
+  if (!D.kiAb || D.kiAb.length === 0) {
+    D.kiAb = [
+      {costo:'1 Ki', desc:'Tempesta di Colpi — 2 attacchi disarmati come azione bonus'},
+      {costo:'1 Ki', desc:'Pazienza Difensiva — usa Schivata come azione bonus'},
+      {costo:'1 Ki', desc:'Passo del Vento — Disimpegno o Scatto come azione bonus; salto ×2'}
+    ];
+  }
+  if (!D.pv || D.pv.length === 0) {
+    D.pv = [
+      {n:'Piè Veloce',d:'Velocità base 15 m (Benedizione minore)'},
+      {n:'Coraggioso',d:'Vantaggio TS contro paura (Benedizione minore)'},
+      {n:'Robusto',d:'+2 PF per ogni livello (Benedizione maggiore)'},
+      {n:'Arti Marziali',d:'1d4 disarmato · DES alt. · att. bonus'},
+      {n:"Difesa senz'armatura",d:'CA = 10 + mod. DES + mod. SAG'},
+      {n:'Mov. Senza Armatura',d:'+3 m velocità (livello 2)'},
+      {n:'Ponderato',d:'Disimpegno/Nascondersi come azione bonus'},
+      {n:'Giustizia Implacabile',d:'Movimento verso nemico come azione bonus'},
+      {n:'Natura degli Smarriti',d:'Non mangia, beve, respira né dorme'},
+      {n:'Scurovisione',d:'18 m in luce fioca; oscurità = grigio'}
+    ];
+  }
+  // --------------------------------------
+
   document.getElementById('f-spe').value=D.spe||33;
   var scPfEl = document.getElementById('sc-pf'); if(scPfEl) scPfEl.value=D.scPf||22;
   var scOnEl = document.getElementById('sc-on'); if(scOnEl) scOnEl.checked=D.scOn||false;

@@ -32,7 +32,6 @@ function hideStatus(){
 }
 
 // Legge l'ID della scheda dall'URL o usa un default
-// Legge l'ID della scheda dall'URL o usa un default
 function getDocId(uid) {
   if (window.SHEET_ID === 'bartolomeo') return uid + '_bartolomeo';
 
@@ -43,23 +42,33 @@ function getDocId(uid) {
   return sheetId ? uid + '_' + sheetId : uid + '_gen_default';
 }
 
-// Funzione globale di salvataggio
+// Funzione globale di salvataggio (AGGIORNATA PER LA SINCRONIZZAZIONE PERFETTA)
 async function fbSave(data) {
   try {
     const uid = auth.currentUser?.uid;
     if(!uid) return;
     
+    // Creiamo il timestamp di ORA
+    const now = new Date().toISOString();
+    data._savedAt = now; 
+    
     // Prendiamo il nome dal campo della scheda o usiamo un fallback
     const nomeCorrente = data.nome || 'Smarrito senza nome';
 
+    // 1. Salviamo nel Cloud
     await setDoc(doc(db, 'schede', getDocId(uid)), {
-      uid: uid,             // Necessario per la ricerca nella index
-      nome: nomeCorrente,   // Rende il nome dinamico nella Home
+      uid: uid,             
+      nome: nomeCorrente,   
       data: JSON.stringify(data),
-      updatedAt: new Date().toISOString()
+      updatedAt: now // Salviamo l'orario esatto su Firebase
     });
     
-    // Aggiorna il titolo della linguetta del browser per riflettere il nome
+    // 2. AGGIORNAMENTO LOCALE IMMEDIATO
+    // Così se ricarichi la pagina prima che Firebase finisca, hai già i dati aggiornati
+    let localKey = (window.SHEET_ID === 'bartolomeo') ? 'inf_bart_v4' : localStorage.getItem('inferno_gen_last');
+    if (localKey) localStorage.setItem(localKey, JSON.stringify(data));
+    
+    // Aggiorna il titolo della linguetta del browser
     document.title = "Inferno — " + nomeCorrente;
     
     setStatus('☁ Salvato ✓', 'var(--g)');
@@ -69,6 +78,7 @@ async function fbSave(data) {
     setStatus('⚠ Errore', '#e06060');
   }
 }
+
 // Agganciamo la funzione di salvataggio all'oggetto window così i bottoni HTML possono vederla
 window._fbSaveGen = fbSave;
 window._fbSave = fbSave; 

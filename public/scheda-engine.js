@@ -221,7 +221,14 @@ window.delRes = (i) => { D.res.splice(i, 1); window.rRes(); };
 
 window.rPriv = () => {
     var c = document.getElementById('pv-l'); if (!c) return; c.innerHTML = '';
-    (D.pv || []).forEach(function (p, i) {
+    
+    // FIX: Se la lista è vuota, mostriamo un placeholder per non far collassare la sezione
+    if (!D.pv || D.pv.length === 0) {
+        c.innerHTML = '<div style="padding:10px; font-size:12px; color:var(--ink3); font-style:italic; text-align:center; border:1px dashed var(--border); border-radius:4px;">Nessun privilegio o tratto attivo.</div>';
+        return;
+    }
+
+    D.pv.forEach(function (p, i) {
         var d = document.createElement('div'); d.className = 'priv-item';
         d.innerHTML = '<div style="flex:1"><input class="priv-name-input" value="' + (p.n || '') + '" onchange="D.pv[' + i + '].n=this.value">' +
             '<textarea rows="1" class="priv-desc-input auto-wrap" placeholder="Descrizione..." oninput="window.autoResize(this)" onchange="D.pv[' + i + '].d=this.value" style="resize:none; overflow:hidden; width:100%; font-family:inherit; font-size:inherit; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid var(--borderl); outline:none; margin-top:4px; padding:2px 0;">' + (p.d || '') + '</textarea></div>' +
@@ -269,11 +276,16 @@ window.collect = () => {
 
 window.salva = () => {
     window.collect();
-    D._savedAt = new Date().toISOString();
+    const now = new Date().toISOString();
+    D._savedAt = now; // Timestamp per sincronizzazione
+    
     var key = 'inferno_gen_' + (D.nome || 'scheda');
     localStorage.setItem(key, JSON.stringify(D));
     localStorage.setItem('inferno_gen_last', key);
-    if (window._fbSaveGen) { window._fbSaveGen(D); }
+    
+    if (window._fbSaveGen) { 
+        window._fbSaveGen(D); 
+    }
 };
 
 window.applyAll = () => {
