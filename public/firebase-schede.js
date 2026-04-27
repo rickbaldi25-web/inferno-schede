@@ -65,8 +65,14 @@ async function fbSave(data) {
     
     // 2. AGGIORNAMENTO LOCALE IMMEDIATO
     // Così se ricarichi la pagina prima che Firebase finisca, hai già i dati aggiornati
-    let localKey = (window.SHEET_ID === 'bartolomeo') ? 'inf_bart_v4' : localStorage.getItem('inferno_gen_last');
-    if (localKey) localStorage.setItem(localKey, JSON.stringify(data));
+    let localKey;
+    if (window.SHEET_ID === 'bartolomeo') {
+      localKey = 'inf_bart_v4';
+    } else {
+      const sheetId = new URLSearchParams(window.location.search).get('id') || 'default';
+      localKey = 'inferno_gen_' + sheetId;
+    }
+    localStorage.setItem(localKey, JSON.stringify(data));
     
     // Aggiorna il titolo della linguetta del browser
     document.title = "Inferno — " + nomeCorrente;
@@ -98,8 +104,8 @@ async function fbLoad(uid){
       if (window.SHEET_ID === 'bartolomeo') {
           localRaw = localStorage.getItem('inf_bart_v4');
       } else {
-          const lastKey = localStorage.getItem('inferno_gen_last');
-          localRaw = lastKey ? localStorage.getItem(lastKey) : null;
+          const sheetId = new URLSearchParams(window.location.search).get('id') || 'default';
+          localRaw = localStorage.getItem('inferno_gen_' + sheetId);
       }
       
       const local = localRaw ? JSON.parse(localRaw) : null;

@@ -197,7 +197,8 @@ window.resetSlots = (lv) => { if (!D.slots[lv]) D.slots[lv] = { tot: 0, used: 0 
 // --- SPERANZA & RISORSE ---
 window.rSpe = () => {
     var v = parseInt(document.getElementById('f-spe').value) || 0;
-    var mx = parseInt(document.getElementById('f-spemax').value) || 33;
+    var spemaxEl = document.getElementById('f-spemax');
+    var mx = spemaxEl ? (parseInt(spemaxEl.value) || 33) : 33;
     var c = document.getElementById('spe-d'); if (!c) return; c.innerHTML = '';
     for (var i = 1; i <= Math.min(mx, 50); i++) {
         var d = document.createElement('div'); d.className = 'sdot' + (i <= v ? ' on' : '') + (i <= 5 ? ' w' : '');
@@ -268,7 +269,8 @@ window.collect = () => {
         var e = document.getElementById('f-' + k); if (e) D[k] = e.value;
     });
     D.spe = parseInt(document.getElementById('f-spe').value) || 0;
-    D.speMax = parseInt(document.getElementById('f-spemax').value) || 33;
+    var _spemax = document.getElementById('f-spemax');
+    D.speMax = _spemax ? (parseInt(_spemax.value) || 33) : 33;
     D.di = document.getElementById('di-d').classList.contains('on');
     D.spCar = document.getElementById('sp-car').value; D.spCd = document.getElementById('sp-cd').value; D.spBon = document.getElementById('sp-bon').value;
     D.car.forEach(c => { var i = document.querySelector('[data-ck="' + c.k + '"]'); if (i) c.v = parseInt(i.value) || 10; });
@@ -279,9 +281,9 @@ window.salva = () => {
     const now = new Date().toISOString();
     D._savedAt = now; // Timestamp per sincronizzazione
     
-    var key = 'inferno_gen_' + (D.nome || 'scheda');
+    var sheetId = new URLSearchParams(window.location.search).get('id') || 'default';
+    var key = 'inferno_gen_' + sheetId;
     localStorage.setItem(key, JSON.stringify(D));
-    localStorage.setItem('inferno_gen_last', key);
     
     if (window._fbSaveGen) { 
         window._fbSaveGen(D); 

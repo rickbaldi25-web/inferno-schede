@@ -462,8 +462,8 @@ window.salva = function(){
   localStorage.setItem('inf_bart_v4', JSON.stringify(D));
   
   // Invia a Firebase (che ora aggiornerà tutto correttamente)
-  if(typeof fbSave !== 'undefined'){ 
-    fbSave(D); 
+  if(window._fbSave){
+    window._fbSave(D);
   } else {
     var m=document.getElementById('sv-msg');
     m.textContent='Salvato ✓'; m.classList.add('show');
