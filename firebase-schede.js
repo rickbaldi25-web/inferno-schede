@@ -32,43 +32,43 @@ function hideStatus(){
 }
 
 // Legge l'ID della scheda dall'URL o usa un default
+// Legge l'ID della scheda dall'URL o usa un default
 function getDocId(uid) {
-  if (window.SHEET_ID === 'bartolomeo') {
-    return uid + '_bartolomeo';
-  }
-  
-  // Cerca un parametro "?id=" nell'indirizzo web
+  if (window.SHEET_ID === 'bartolomeo') return uid + '_bartolomeo';
+
   const urlParams = new URLSearchParams(window.location.search);
   const sheetId = urlParams.get('id');
   
-  if (sheetId) {
-    return uid + '_' + sheetId; // Es: uid_123456789
-  }
-  
-  return uid + '_gen_default';
+  // Se non c'è un ID nell'URL, usa 'default', altrimenti usa l'ID specifico
+  return sheetId ? uid + '_' + sheetId : uid + '_gen_default';
 }
 
 // Funzione globale di salvataggio
-async function fbSave(data){
+async function fbSave(data) {
   try {
     const uid = auth.currentUser?.uid;
-    if(!uid){ setStatus('⚠ Non connesso', '#e06060'); hideStatus(); return; }
+    if(!uid) return;
     
+    // Prendiamo il nome dal campo della scheda o usiamo un fallback
+    const nomeCorrente = data.nome || 'Smarrito senza nome';
+
     await setDoc(doc(db, 'schede', getDocId(uid)), {
-      uid: uid, // AGGIUNTA FONDAMENTALE: ci serve per trovare le schede dell'utente dopo!
+      uid: uid,             // Necessario per la ricerca nella index
+      nome: nomeCorrente,   // Rende il nome dinamico nella Home
       data: JSON.stringify(data),
-      nome: data.nome || 'Smarrito',
       updatedAt: new Date().toISOString()
     });
+    
+    // Aggiorna il titolo della linguetta del browser per riflettere il nome
+    document.title = "Inferno — " + nomeCorrente;
+    
     setStatus('☁ Salvato ✓', 'var(--g)');
     hideStatus();
-  } catch(err){
+  } catch(err) {
     console.error(err);
-    setStatus('⚠ Errore salvataggio', '#e06060');
-    hideStatus();
+    setStatus('⚠ Errore', '#e06060');
   }
 }
-
 // Agganciamo la funzione di salvataggio all'oggetto window così i bottoni HTML possono vederla
 window._fbSaveGen = fbSave;
 window._fbSave = fbSave; 
