@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inferno — Scheda Personaggio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+SC:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --r:#8B0000;--rl:#a01010;--rd:#500000;
+  --g:#A07820;--gl:#c49830;
+  --bg:#0a0908;--s1:#141210;--s2:#1c1916;--s3:#252220;
+  --ink:#f0e8d8;--ink2:#c8baa8;--ink3:#8a7a68;
+  --border:rgba(160,120,32,0.18);--borderl:rgba(160,120,32,0.35);
+  --panel:rgba(255,255,255,0.03);--panelh:rgba(255,255,255,0.05);
+  --radius:6px;--radiusl:10px;
+}
+.t-ember{--r:#8B0000;--rl:#a52020;--rd:#500000;--g:#A07820;--gl:#c49830;--bg:#0a0908;--s1:#141210;--s2:#1c1916;--s3:#252220;--ink:#f0e8d8;--ink2:#c8baa8;--ink3:#8a7a68;--border:rgba(160,120,32,0.18);--borderl:rgba(160,120,32,0.35);}
+.t-abyss{--r:#1a2a6c;--rl:#2a3a8c;--rd:#0d1540;--g:#4a7a9b;--gl:#5a9abf;--bg:#060810;--s1:#0e1020;--s2:#161828;--s3:#1e2030;--ink:#d8e4f0;--ink2:#a0b4c8;--ink3:#607080;--border:rgba(74,122,155,0.2);--borderl:rgba(74,122,155,0.4);}
+.t-ash{--r:#2a3530;--rl:#3a4840;--rd:#151c18;--g:#607060;--gl:#809080;--bg:#080a09;--s1:#111413;--s2:#181c1a;--s3:#202420;--ink:#dce8dc;--ink2:#a0b0a0;--ink3:#607060;--border:rgba(96,112,96,0.2);--borderl:rgba(96,112,96,0.4);}
+.t-venom{--r:#1a5c20;--rl:#247a2c;--rd:#0c3010;--g:#8a8a20;--gl:#aaaa30;--bg:#060908;--s1:#0e1210;--s2:#151a16;--s3:#1c221e;--ink:#d8f0d8;--ink2:#a0c8a0;--ink3:#608060;--border:rgba(138,138,32,0.2);--borderl:rgba(138,138,32,0.38);}
+.t-light{--r:#7B0000;--rl:#9B1111;--rd:#4A0000;--g:#8a6010;--gl:#aa8020;--bg:#f5f0e8;--s1:#ede6d8;--s2:#e0d8c8;--s3:#d0c8b0;--ink:#1a1208;--ink2:#4a3820;--ink3:#8a7050;--border:rgba(122,80,0,0.15);--borderl:rgba(122,80,0,0.3);--panel:rgba(0,0,0,0.03);--panelh:rgba(0,0,0,0.06);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh;font-size:14px;line-height:1.5;}
+
+/* TOOLBAR */
+.toolbar{position:sticky;top:0;z-index:100;background:rgba(10,9,8,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;height:48px;}
+.toolbar-brand{font-family:'Cormorant SC',serif;font-size:15px;letter-spacing:3px;color:var(--g);text-transform:uppercase;flex-shrink:0;margin-right:8px;}
+.tb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+.tb-spacer{flex:1;}
+.theme-dots{display:flex;gap:6px;align-items:center;}
+.tdot{width:18px;height:18px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0;}
+.tdot:hover,.tdot.on{transform:scale(1.25);border-color:rgba(255,255,255,0.7);}
+.tdot[data-t="ember"]{background:radial-gradient(circle at 35% 35%,#c44,#500);}
+.tdot[data-t="abyss"]{background:radial-gradient(circle at 35% 35%,#4a7,#0a1a4c);}
+.tdot[data-t="ash"]{background:radial-gradient(circle at 35% 35%,#607060,#101410);}
+.tdot[data-t="venom"]{background:radial-gradient(circle at 35% 35%,#4a8a20,#061008);}
+.tdot[data-t="light"]{background:radial-gradient(circle at 35% 35%,#d4c090,#f5f0e8);border-color:rgba(0,0,0,0.2);}
+.tdot[data-t="custom"]{background:conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);}
+.cpk{display:none;align-items:center;gap:8px;}
+.cpk.show{display:flex;}
+.cpk-g{display:flex;align-items:center;gap:4px;}
+.cpk-l{font-size:10px;color:var(--ink3);letter-spacing:1px;}
+input[type="color"]{width:20px;height:20px;border:none;border-radius:3px;cursor:pointer;padding:0;background:none;}
+.tb-btn{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.5px;padding:5px 12px;border:1px solid var(--borderl);background:var(--panel);color:var(--ink2);cursor:pointer;border-radius:4px;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{background:var(--panelh);color:var(--ink);border-color:var(--gl);}
+.tb-btn.primary{background:var(--r);border-color:var(--r);color:#fff;}
+.tb-btn.primary:hover{background:var(--rl);}
+.save-msg{font-size:11px;color:var(--g);opacity:0;transition:opacity .3s;}
+.save-msg.show{opacity:1;}
+
+/* HERO */
+.hero{padding:48px 40px 32px;background:linear-gradient(180deg,var(--s1) 0%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(139,0,0,0.06) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(160,120,32,0.04) 0%,transparent 50%);pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:40px;max-width:1400px;margin:0 auto;position:relative;}
+.hero-left,.hero-right{display:flex;flex-direction:column;gap:16px;}
+.hero-right{align-items:flex-end;}
+.hero-center{text-align:center;}
+.hero-title{font-family:'Cormorant SC',serif;font-size:52px;font-weight:400;color:var(--g);letter-spacing:6px;text-transform:uppercase;line-height:1;text-shadow:0 0 60px rgba(160,120,32,0.2);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:300;color:var(--ink3);letter-spacing:5px;text-transform:uppercase;margin-top:4px;}
+.field-group{display:flex;flex-direction:column;gap:3px;}
+.field-label{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);}
+.field-input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:17px;padding:2px 0;outline:none;transition:border-color .2s;width:280px;}
+.field-input:focus{border-bottom-color:var(--g);}
+.field-input::placeholder{color:var(--ink3);font-style:italic;}
+
+/* VITALS */
+.vitals{background:var(--s1);border-bottom:1px solid var(--border);padding:0 40px;}
+.vitals-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);}
+.vital{display:flex;flex-direction:column;align-items:center;padding:16px 8px;border-right:1px solid var(--border);gap:2px;}
+.vital:last-child{border-right:none;}
+.vital-lbl{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);}
+.vital-val{background:transparent;border:none;color:var(--ink);font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;text-align:center;width:100%;outline:none;transition:color .15s;}
+.vital-val:focus{color:var(--g);}
+.vital-val::placeholder{color:var(--ink3);font-size:18px;}
+.vital-hint{font-size:9px;color:var(--ink3);font-style:italic;}
+
+/* MAIN */
+.main{max-width:1400px;margin:0 auto;padding:32px 40px;display:grid;grid-template-columns:200px 1fr 280px;gap:24px;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radiusl);overflow:hidden;transition:border-color .2s;}
+.card:hover{border-color:var(--borderl);}
+.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-title{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);}
+.card-body{padding:12px;}
+
+/* CARATTERISTICHE */
+.caract-col{display:flex;flex-direction:column;gap:8px;}
+.caract-block{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:border-color .2s,background .15s;}
+.caract-block:hover{background:var(--s3);border-color:var(--borderl);}
+.caract-name{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);}
+.caract-val{background:transparent;border:none;font-family:'Cormorant SC',serif;font-size:28px;font-weight:600;color:var(--ink);text-align:center;width:60px;outline:none;transition:color .15s;}
+.caract-val:focus{color:var(--gl);}
+.caract-mod{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--g);}
+
+/* CENTER */
+.center-col{display:flex;flex-direction:column;gap:20px;}
+.skills-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.skill-row{display:flex;align-items:center;gap:8px;padding:5px 4px;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;border-radius:3px;}
+.skill-row:hover{background:var(--panelh);}
+.skill-row:last-child{border-bottom:none;}
+.pdot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink3);cursor:pointer;flex-shrink:0;transition:all .15s;}
+.pdot.on{background:var(--g);border-color:var(--g);}
+.skill-bonus{font-family:'Cormorant SC',serif;font-size:13px;font-weight:600;color:var(--g);min-width:26px;text-align:right;}
+.skill-name{font-size:12px;color:var(--ink2);flex:1;}
+.skill-name-input{background:transparent;border:none;border-bottom:1px solid transparent;font-size:12px;color:var(--ink2);flex:1;outline:none;transition:border-color .15s;font-family:'DM Sans',sans-serif;}
+.skill-name-input:focus{border-bottom-color:var(--borderl);}
+.attr-input{background:transparent;border:none;border-bottom:1px solid transparent;font-size:10px;color:var(--ink3);width:28px;text-align:center;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .15s;}
+.attr-input:focus{border-bottom-color:var(--borderl);}
+.sec-label{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.vv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.vv-area{background:transparent;border:1px solid var(--border);border-radius:var(--radius);font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink2);padding:10px 12px;resize:vertical;outline:none;min-height:60px;width:100%;transition:border-color .2s;line-height:1.5;}
+.vv-area:focus{border-color:var(--borderl);}
+.vv-area::placeholder{color:var(--ink3);font-style:italic;}
+
+/* TABLES */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);padding:8px 10px;text-align:left;border-bottom:1px solid var(--borderl);}
+.data-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--panelh);}
+.cell-input{background:transparent;border:none;font-size:13px;color:var(--ink);width:100%;outline:none;font-family:'DM Sans',sans-serif;transition:color .15s;}
+.cell-input::placeholder{color:var(--ink3);font-style:italic;}
+.stato-pill{display:inline-flex;align-items:center;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;cursor:pointer;transition:all .2s;border:1px solid;white-space:nowrap;}
+.sp0{background:rgba(255,255,255,0.05);color:var(--ink3);border-color:var(--border);}
+.sp1{background:rgba(139,0,0,0.15);color:#e06060;border-color:rgba(139,0,0,0.4);}
+.sp2{background:rgba(160,120,32,0.15);color:var(--gl);border-color:rgba(160,120,32,0.4);}
+.sp3{background:rgba(255,255,255,0.1);color:var(--ink);border-color:rgba(255,255,255,0.3);}
+.bonus-cell{font-family:'Cormorant SC',serif;font-size:15px;font-weight:600;color:var(--g);cursor:pointer;}
+.bonus-cell:hover{color:var(--gl);}
+.click-edit{cursor:pointer;}
+.click-edit:hover{color:var(--ink);}
+.cronache-area{background:transparent;border:1px solid var(--border);border-radius:var(--radius);font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink2);padding:12px;resize:vertical;outline:none;min-height:80px;width:100%;line-height:1.6;transition:border-color .2s;}
+.cronache-area:focus{border-color:var(--borderl);}
+.cronache-area::placeholder{color:var(--ink3);font-style:italic;}
+
+/* MAGIE */
+.spell-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;}
+.spell-level{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s;}
+.spell-level:hover{border-color:var(--borderl);}
+.sl-head{padding:6px 10px;background:rgba(139,0,0,0.15);display:flex;align-items:center;justify-content:space-between;}
+.sl-lbl{font-family:'Cormorant SC',serif;font-size:11px;color:var(--g);letter-spacing:1px;}
+.sl-slots{display:flex;align-items:center;gap:4px;}
+.sl-slot-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--g);cursor:pointer;transition:all .15s;flex-shrink:0;}
+.sl-slot-dot.used{background:var(--g);}
+.sl-slot-count{font-size:10px;color:var(--ink3);}
+.sl-body{padding:6px 8px;}
+.spell-row{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.spell-row:last-child{border-bottom:none;}
+.spell-prep{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink3);cursor:pointer;flex-shrink:0;transition:all .15s;}
+.spell-prep.on{background:var(--g);border-color:var(--g);}
+.spell-name-input{background:transparent;border:none;font-size:11px;color:var(--ink2);flex:1;outline:none;font-family:'DM Sans',sans-serif;border-bottom:1px solid transparent;transition:border-color .15s;}
+.spell-name-input:focus{border-bottom-color:var(--borderl);}
+.spell-name-input::placeholder{color:var(--ink3);font-style:italic;}
+.spell-cantrips{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.spell-section-lbl{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;}
+.spell-cast-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.sci-box{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;text-align:center;}
+.sci-lbl{font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;}
+.sci-val{background:transparent;border:none;font-family:'Cormorant SC',serif;font-size:20px;color:var(--ink);text-align:center;width:100%;outline:none;transition:color .15s;}
+.sci-val:focus{color:var(--gl);}
+.sci-val::placeholder{color:var(--ink3);font-size:14px;}
+
+/* RISORSE */
+.res-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.res-row:last-child{border-bottom:none;}
+.res-name-in{background:transparent;border:none;border-bottom:1px solid transparent;font-family:'Cormorant SC',serif;font-size:13px;color:var(--g);width:110px;outline:none;transition:border-color .15s;}
+.res-name-in:focus{border-bottom-color:var(--borderl);}
+.res-name-in::placeholder{color:var(--ink3);font-style:italic;font-family:'DM Sans',sans-serif;font-size:11px;}
+.res-cur{background:transparent;border:1px solid var(--borderl);border-radius:4px;font-family:'Cormorant SC',serif;font-size:16px;color:var(--ink);text-align:center;width:38px;padding:2px;outline:none;}
+.res-max-in{background:transparent;border:none;border-bottom:1px solid var(--border);font-family:'Cormorant SC',serif;font-size:14px;color:var(--ink3);text-align:center;width:32px;outline:none;transition:border-color .15s;}
+.res-max-in:focus{border-bottom-color:var(--borderl);}
+
+/* RIGHT */
+.right-col{display:flex;flex-direction:column;gap:16px;}
+.spe-card{background:linear-gradient(135deg,var(--rd) 0%,var(--r) 100%);border:1px solid rgba(160,120,32,0.3);border-radius:var(--radiusl);padding:20px;text-align:center;}
+.spe-title{font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:3px;color:var(--gl);text-transform:uppercase;margin-bottom:10px;}
+.spe-nums{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;}
+.spe-cur{background:transparent;border:none;border-bottom:2px solid var(--g);font-family:'Cormorant SC',serif;font-size:36px;font-weight:600;color:#fff;text-align:center;width:60px;outline:none;}
+.spe-sep{font-size:18px;color:rgba(255,255,255,0.3);}
+.spe-max-in{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.3);font-family:'Cormorant SC',serif;font-size:18px;color:rgba(255,255,255,0.5);text-align:center;width:44px;outline:none;transition:color .15s;}
+.spe-max-in:focus{color:rgba(255,255,255,0.8);}
+.spe-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;}
+.sdot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:background .1s,transform .1s;}
+.sdot:hover{transform:scale(1.4);}
+.sdot.on{background:var(--gl);border-color:var(--gl);}
+.sdot.w{border-color:rgba(255,100,100,0.5);}
+.sdot.on.w{background:#e03030;border-color:#ff5050;}
+.res-block{background:var(--s1);border:1px solid var(--border);border-radius:var(--radiusl);overflow:hidden;}
+.res-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.res-name{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);}
+.res-body{padding:12px 14px;}
+.di-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--g);cursor:pointer;transition:all .15s;}
+.di-dot.on{background:var(--g);}
+.priv-item{background:var(--s2);border:1px solid var(--border);border-left:2px solid var(--r);border-radius:0 var(--radius) var(--radius) 0;padding:8px 10px;margin-bottom:6px;display:flex;align-items:flex-start;gap:6px;transition:border-color .2s;}
+.priv-item:hover{border-color:var(--borderl);}
+.priv-name-input{background:transparent;border:none;font-size:11px;font-weight:500;color:var(--ink);display:block;width:100%;outline:none;font-family:'DM Sans',sans-serif;border-bottom:1px solid transparent;transition:color .15s;}
+.priv-name-input:focus{border-bottom-color:var(--border);}
+.priv-desc-input{background:transparent;border:none;font-size:11px;color:var(--ink3);width:100%;outline:none;font-family:'DM Sans',sans-serif;border-bottom:1px solid transparent;}
+.priv-desc-input:focus{border-bottom-color:var(--border);}
+.note-area{background:transparent;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);padding:10px 12px;resize:vertical;outline:none;min-height:72px;width:100%;transition:border-color .2s;line-height:1.5;}
+.note-area:focus{border-color:var(--borderl);}
+.note-area::placeholder{color:var(--ink3);font-style:italic;}
+
+/* BUTTONS */
+.add-btn{font-size:10px;font-weight:500;letter-spacing:0.5px;padding:3px 8px;border:1px dashed var(--ink3);background:transparent;color:var(--ink3);cursor:pointer;border-radius:4px;transition:all .15s;}
+.add-btn:hover{border-color:var(--g);color:var(--g);background:rgba(160,120,32,0.06);}
+.del-btn{font-size:11px;background:transparent;border:none;color:var(--ink3);cursor:pointer;padding:0 2px;opacity:0;transition:opacity .15s,color .15s;flex-shrink:0;}
+tr:hover .del-btn,.skill-row:hover .del-btn,.priv-item:hover .del-btn,.res-row:hover .del-btn,.spell-row:hover .del-btn{opacity:1;}
+.del-btn:hover{color:#e05050;}
+.reset-btn{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:4px 10px;border:1px dashed var(--borderl);background:transparent;color:var(--g);cursor:pointer;border-radius:4px;transition:all .15s;}
+.reset-btn:hover{background:rgba(160,120,32,0.08);}
+
+/* MOBILE */
+@media(max-width:900px){
+  .toolbar{padding:0 16px;gap:8px;}
+  .toolbar-brand{font-size:13px;letter-spacing:2px;}
+  .tb-btn span{display:none;}
+  .hero{padding:28px 20px 20px;}
+  .hero-grid{grid-template-columns:1fr;gap:16px;}
+  .hero-right{align-items:flex-start;}
+  .hero-center{order:-1;}
+  .hero-title{font-size:36px;letter-spacing:4px;}
+  .field-input{width:100%;}
+  .vitals{padding:0 20px;}
+  .vitals-inner{grid-template-columns:repeat(3,1fr);}
+  .vital:nth-child(3){border-right:none;}
+  .vital:nth-child(4){border-top:1px solid var(--border);}
+  .vital-val{font-size:20px;}
+  .main{grid-template-columns:1fr;padding:16px;gap:16px;}
+  .caract-col{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .skills-2col{grid-template-columns:1fr;}
+  .vv-grid{grid-template-columns:1fr;}
+  .spell-grid{grid-template-columns:repeat(2,1fr);}
+  .spell-cast-info{grid-template-columns:1fr 1fr 1fr;}
+  .mob-section{border-bottom:1px solid var(--border);}
+  .mob-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);user-select:none;transition:color .15s;}
+  .mob-toggle:hover{color:var(--ink2);}
+  .mob-toggle::after{content:'▾';font-size:14px;transition:transform .2s;}
+  .mob-toggle.open::after{transform:rotate(-180deg);}
+  .mob-content{display:none;}
+  .mob-content.open{display:block;padding-bottom:16px;}
+  .del-btn{opacity:0.5;}
+}
+@media(min-width:901px){
+  .mob-section{display:contents;}
+  .mob-toggle{display:none;}
+  .mob-content{display:contents;}
+}
+</style>
+</head>
+<body class="t-ember">
+
+<div class="toolbar">
+  <span class="toolbar-brand">Inferno</span>
+  <div class="tb-sep"></div>
+  <div class="theme-dots">
+    <div class="tdot on" data-t="ember" onclick="setTheme('ember',this)"></div>
+    <div class="tdot" data-t="abyss"  onclick="setTheme('abyss',this)"></div>
+    <div class="tdot" data-t="ash"    onclick="setTheme('ash',this)"></div>
+    <div class="tdot" data-t="venom"  onclick="setTheme('venom',this)"></div>
+    <div class="tdot" data-t="light"  onclick="setTheme('light',this)"></div>
+    <div class="tdot" data-t="custom" onclick="togCustom(this)"></div>
+  </div>
+  <div class="cpk" id="cpk">
+    <div class="cpk-g"><span class="cpk-l">Accento</span><input type="color" id="cp1" value="#8B0000" oninput="applyCustom()"></div>
+    <div class="cpk-g"><span class="cpk-l">Oro</span><input type="color" id="cp2" value="#A07820" oninput="applyCustom()"></div>
+    <div class="cpk-g"><span class="cpk-l">Sfondo</span><input type="color" id="cp3" value="#0a0908" oninput="applyCustom()"></div>
+  </div>
+  <div class="tb-spacer"></div>
+  <button class="tb-btn" onclick="exportJSON()">↓ <span>Esporta</span></button>
+  <button class="tb-btn" onclick="document.getElementById('fimp').click()">↑ <span>Importa</span></button>
+  <input type="file" id="fimp" accept=".json" style="display:none" onchange="importJSON(event)">
+  <button class="tb-btn" onclick="nuova()">✦ <span>Nuovo</span></button>
+  <button class="tb-btn" onclick="ripr()">↩ <span>Ripristina</span></button>
+  <button class="tb-btn primary" onclick="salva()">Salva</button>
+  <span class="save-msg" id="sv-msg">Salvato ✓</span>
+</div>
+
+<div class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="field-group"><label class="field-label">Nome Personaggio</label><input class="field-input" id="f-nome" placeholder="Nome..."></div>
+      <div class="field-group"><label class="field-label">Peccato &amp; Punizione</label><input class="field-input" id="f-pec" placeholder="Peccato → Luogo"></div>
+    </div>
+    <div class="hero-center">
+      <div class="hero-title">Inferno</div>
+      <div class="hero-sub">Dante's Guide to Hell</div>
+    </div>
+    <div class="hero-right">
+      <div class="field-group"><label class="field-label">Archetipo &amp; Livello</label><input class="field-input" id="f-cls" placeholder="Archetipo · Livello N"></div>
+      <div class="field-group"><label class="field-label">Allineamento</label><input class="field-input" id="f-all" placeholder="Allineamento"></div>
+    </div>
+  </div>
+</div>
+
+<div class="vitals">
+  <div class="vitals-inner">
+    <div class="vital"><span class="vital-lbl">PF Max</span><input class="vital-val" id="f-pfx" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">PF Attuali</span><input class="vital-val" id="f-pf" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">Classe Armatura</span><input class="vital-val" id="f-ca" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">Iniziativa</span><input class="vital-val" id="f-ini" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">Velocità</span><input class="vital-val" id="f-vel" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">Prof. Bonus</span><input class="vital-val" id="f-prf" value="+2" onchange="rAll()"></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- LEFT -->
+  <div>
+    <div class="sec-label">Caratteristiche</div>
+    <div class="caract-col" id="cl"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center-col">
+
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Statistiche &amp; Abilità</div>
+      <div class="mob-content open">
+        <div class="skills-2col">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Tiri Salvezza</span></div>
+            <div class="card-body" id="ts-col"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Abilità</span><button class="add-btn" onclick="addAb()">+ aggiungi</button></div>
+            <div class="card-body" id="ab-col"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Virtù &amp; Vizi</div>
+      <div class="mob-content open">
+        <div class="vv-grid">
+          <div><div class="sec-label">Virtù</div><textarea class="vv-area" id="f-vir" placeholder="La virtù del personaggio..."></textarea></div>
+          <div><div class="sec-label">Vizio</div><textarea class="vv-area" id="f-viz" placeholder="Il vizio del personaggio..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Emblemi Infernali</div>
+      <div class="mob-content open">
+        <div class="sec-label">Emblemi <button class="add-btn" onclick="addEmbl()" style="margin-left:8px">+ emblema</button></div>
+        <div class="card"><table class="data-table"><thead><tr>
+          <th style="width:22%">Nome</th><th style="width:10%">Bonus</th>
+          <th style="width:18%">Danni/Tipo</th><th style="width:14%">Stato</th>
+          <th style="width:32%">Note</th><th style="width:4%"></th>
+        </tr></thead><tbody id="etb"></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Attacchi</div>
+      <div class="mob-content open">
+        <div class="sec-label">Attacchi <button class="add-btn" onclick="addAtk()" style="margin-left:8px">+ attacco</button></div>
+        <div class="card"><table class="data-table"><thead><tr>
+          <th style="width:28%">Attacco</th><th style="width:11%">Bonus</th>
+          <th style="width:22%">Danni/Tipo</th><th style="width:35%">Note</th><th style="width:4%"></th>
+        </tr></thead><tbody id="atb"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- MAGIE -->
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">✨ Magie &amp; Incantesimi</div>
+      <div class="mob-content open">
+        <div class="sec-label" style="margin-bottom:12px;">Magie &amp; Incantesimi</div>
+        <!-- Cast info -->
+        <div class="spell-cast-info">
+          <div class="sci-box"><div class="sci-lbl">Caratteristica</div><input class="sci-val" id="sp-car" placeholder="SAG"></div>
+          <div class="sci-box"><div class="sci-lbl">CD Salvezza</div><input class="sci-val" id="sp-cd" placeholder="—"></div>
+          <div class="sci-box"><div class="sci-lbl">Bonus Attacco</div><input class="sci-val" id="sp-bon" placeholder="—"></div>
+        </div>
+        <!-- Cantrips -->
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-head">
+            <span class="card-title">Trucchetti (Livello 0)</span>
+            <button class="add-btn" onclick="addSpell(0)">+ aggiungi</button>
+          </div>
+          <div class="card-body" id="sp-0"></div>
+        </div>
+        <!-- Spell levels 1-9 -->
+        <div class="spell-grid" id="spell-grid"></div>
+      </div>
+    </div>
+
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Cronache Infernali</div>
+      <div class="mob-content open">
+        <div class="sec-label">Cronache Infernali</div>
+        <textarea class="cronache-area" id="f-cr" rows="4" placeholder="Background del personaggio, storia, note narrative..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-col">
+    <div class="spe-card">
+      <div class="spe-title">✦ Speranza ✦</div>
+      <div class="spe-nums">
+        <input type="number" class="spe-cur" id="f-spe" value="33" min="0" max="99" oninput="rSpe()">
+        <span class="spe-sep">/</span>
+        <input type="number" class="spe-max-in" id="f-spemax" value="33" min="1" max="99" title="Massimo Speranza" oninput="rSpe()">
+      </div>
+      <div class="spe-dots" id="spe-d"></div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head">
+        <span class="res-name">✨ Divina Ispirazione</span>
+        <div class="di-dot" id="di-d" onclick="this.classList.toggle('on')" title="Usa / Recupera"></div>
+      </div>
+      <div class="res-body" style="font-size:11px;color:var(--ink3);line-height:1.5">Concessa dalla Guida. Vantaggio a un tiro o compensare perdita di Speranza.</div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head">
+        <span class="res-name">🎲 Risorse</span>
+        <button class="add-btn" onclick="addRes()">+ risorsa</button>
+      </div>
+      <div class="res-body" id="res-list"></div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head">
+        <span class="res-name">Privilegi &amp; Tratti</span>
+        <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
+      </div>
+      <div class="res-body" id="pv-l"></div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head"><span class="res-name">Note</span></div>
+      <div class="res-body">
+        <textarea class="note-area" id="f-nt" placeholder="Equipaggiamento, note sessione, oggetti magici…"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="border-top:1px solid var(--border);padding:12px 40px;max-width:1400px;margin:0 auto;">
+  <span style="font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase;">Inferno — Dante's Guide to Hell · Scheda Generica v2.0</span>
+</div>
+
+<script>
+var D={
+  theme:'ember',
+  nome:'',cls:'',all:'',pec:'',pfx:'',pf:'',ca:'',ini:'',vel:'',prf:'+2',
+  vir:'',viz:'',cr:'',nt:'',
+  spe:33,speMax:33,di:false,
+  spCar:'',spCd:'',spBon:'',
+  car:[
+    {n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},
+    {n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}
+  ],
+  ts:[
+    {n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},
+    {n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}
+  ],
+  ab:[
+    {n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},
+    {n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},
+    {n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},
+    {n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},
+    {n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},
+    {n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},
+    {n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},
+    {n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}
+  ],
+  em:[],atk:[],pv:[],res:[],
+  spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
+  slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}
+};
+
+function togMob(t){t.classList.toggle('open');t.nextElementSibling.classList.toggle('open');}
+function fm(n){return(n>=0?'+':'')+n;}
+function gMod(k){var c=D.car.find(c=>c.k===k);var i=document.querySelector('[data-ck="'+k+'"]');var v=i?parseInt(i.value)||10:(c?c.v:10);return Math.floor((v-10)/2);}
+function gPrf(){var v=document.getElementById('f-prf');return parseInt((v?v.value:'+2').replace('+',''))||2;}
+
+function rCar(){
+  var c=document.getElementById('cl');c.innerHTML='';
+  D.car.forEach(function(cr){
+    var d=document.createElement('div');d.className='caract-block';
+    d.innerHTML='<div class="caract-name">'+cr.n+'</div>'+
+      '<input type="number" class="caract-val" data-ck="'+cr.k+'" value="'+cr.v+'" min="1" max="30">'+
+      '<div class="caract-mod" id="cm-'+cr.k+'">'+fm(Math.floor((cr.v-10)/2))+'</div>';
+    c.appendChild(d);
+  });
+  c.querySelectorAll('.caract-val').forEach(function(inp){
+    inp.addEventListener('input',function(){
+      var k=inp.dataset.ck;
+      document.getElementById('cm-'+k).textContent=fm(Math.floor(((parseInt(inp.value)||10)-10)/2));
+      rAll();
+    });
+  });
+}
+
+function rTS(){
+  var c=document.getElementById('ts-col');c.innerHTML='';
+  D.ts.forEach(function(ts,i){
+    var b=gMod(ts.k)+(ts.p?gPrf():0);
+    var r=document.createElement('div');r.className='skill-row';
+    r.innerHTML='<div class="pdot '+(ts.p?'on':'')+'" onclick="tTS(this,'+i+')"></div>'+
+      '<span class="skill-bonus" id="tsb-'+i+'">'+fm(b)+'</span>'+
+      '<span class="skill-name">'+ts.n+'</span>';
+    c.appendChild(r);
+  });
+}
+function tTS(d,i){d.classList.toggle('on');D.ts[i].p=d.classList.contains('on');rfTS();}
+function rfTS(){D.ts.forEach(function(ts,i){var e=document.getElementById('tsb-'+i);if(e)e.textContent=fm(gMod(ts.k)+(ts.p?gPrf():0));});}
+
+function rAb(){
+  var c=document.getElementById('ab-col');c.innerHTML='';
+  D.ab.forEach(function(ab,i){
+    var b=gMod(ab.k)+(ab.p?gPrf():0);
+    var r=document.createElement('div');r.className='skill-row';
+    r.innerHTML='<div class="pdot '+(ab.p?'on':'')+'" onclick="tAb(this,'+i+')"></div>'+
+      '<span class="skill-bonus" id="abb-'+i+'">'+fm(b)+'</span>'+
+      '<input class="skill-name-input" value="'+ab.n+'" placeholder="Abilità" onchange="D.ab['+i+'].n=this.value">'+
+      '<input class="attr-input" value="'+ab.k+'" placeholder="FOR" onchange="D.ab['+i+'].k=this.value;rfAb()">'+
+      '<button class="del-btn" onclick="delAb('+i+')">✕</button>';
+    c.appendChild(r);
+  });
+}
+function tAb(d,i){d.classList.toggle('on');D.ab[i].p=d.classList.contains('on');rfAb();}
+function rfAb(){D.ab.forEach(function(ab,i){var e=document.getElementById('abb-'+i);if(e)e.textContent=fm(gMod(ab.k)+(ab.p?gPrf():0));});}
+function addAb(){D.ab.push({n:'',k:'FOR',p:false});rAb();}
+function delAb(i){D.ab.splice(i,1);rAb();}
+
+var SN=['Base','Tormentato','Arso','Condannato'],SC=['sp0','sp1','sp2','sp3'];
+function rEmbl(){
+  var tb=document.getElementById('etb');tb.innerHTML='';
+  D.em.forEach(function(e,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><input class="cell-input" value="'+e.n+'" placeholder="Nome" onchange="D.em['+i+'].n=this.value"></td>'+
+      '<td><input class="cell-input" value="'+e.b+'" style="width:40px" placeholder="+0" onchange="D.em['+i+'].b=this.value"></td>'+
+      '<td><input class="cell-input" value="'+e.d+'" placeholder="1d6" onchange="D.em['+i+'].d=this.value"></td>'+
+      '<td><span class="stato-pill '+SC[e.s||0]+'" data-s="'+(e.s||0)+'" onclick="cycS(this,'+i+')">'+(SN[e.s||0])+'</span></td>'+
+      '<td><input class="cell-input" value="'+(e.nt||'')+'" placeholder="Note..." onchange="D.em['+i+'].nt=this.value"></td>'+
+      '<td><button class="del-btn" onclick="delEm('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+}
+function cycS(b,i){var s=(parseInt(b.dataset.s)+1)%4;b.dataset.s=s;D.em[i].s=s;b.textContent=SN[s];b.className='stato-pill '+SC[s];}
+function addEmbl(){D.em.push({n:'',b:'',d:'',s:0,nt:''});rEmbl();}
+function delEm(i){D.em.splice(i,1);rEmbl();}
+
+function rAtk(){
+  var tb=document.getElementById('atb');tb.innerHTML='';
+  D.atk.forEach(function(a,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><input class="cell-input" value="'+a.n+'" placeholder="Nome attacco" onchange="D.atk['+i+'].n=this.value"></td>'+
+      '<td class="bonus-cell click-edit" onclick="edAtk('+i+',\'b\',this)">'+(a.b||'—')+'</td>'+
+      '<td class="click-edit" onclick="edAtk('+i+',\'d\',this)" style="font-size:13px;cursor:pointer">'+(a.d||'—')+'</td>'+
+      '<td class="click-edit" onclick="edAtk('+i+',\'nt\',this)" style="font-size:12px;color:var(--ink3);cursor:pointer">'+(a.nt||'')+'</td>'+
+      '<td><button class="del-btn" onclick="delAtk('+i+')">✕</button></td>';
+    tb.appendChild(tr);
+  });
+}
+function edAtk(i,f,td){
+  var inp=document.createElement('input');inp.value=D.atk[i][f]||'';inp.placeholder='...';
+  inp.style.cssText='background:transparent;border:none;border-bottom:1px solid var(--borderl);font-family:inherit;font-size:inherit;color:var(--ink);width:100%;outline:none;';
+  td.innerHTML='';td.appendChild(inp);inp.focus();
+  inp.onblur=function(){D.atk[i][f]=inp.value;rAtk();};
+  inp.onkeydown=function(e){if(e.key==='Enter')inp.blur();};
+}
+function addAtk(){D.atk.push({n:'',b:'',d:'',nt:''});rAtk();}
+function delAtk(i){D.atk.splice(i,1);rAtk();}
+
+/* MAGIE */
+function rSpells(){
+  // Trucchetti
+  var c0=document.getElementById('sp-0');c0.innerHTML='';
+  (D.spells[0]||[]).forEach(function(s,i){
+    var r=document.createElement('div');r.className='spell-row';
+    r.innerHTML='<input class="spell-name-input" value="'+(s.n||'')+'" placeholder="Nome trucchetto..." onchange="D.spells[0]['+i+'].n=this.value">'+
+      '<button class="del-btn" onclick="delSpell(0,'+i+')">✕</button>';
+    c0.appendChild(r);
+  });
+  if(!(D.spells[0]||[]).length){c0.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;padding:4px 2px;">Nessun trucchetto. Clicca "+ aggiungi".</div>';}
+  // Livelli 1-9
+  var sg=document.getElementById('spell-grid');sg.innerHTML='';
+  for(var lv=1;lv<=9;lv++){
+    var sl=D.slots[lv]||{tot:0,used:0};
+    var spells=D.spells[lv]||[];
+    var box=document.createElement('div');box.className='spell-level';
+    var lvl=lv;
+    var slotsHtml='';
+    for(var s=0;s<Math.max(sl.tot||0,0);s++){
+      slotsHtml+='<div class="sl-slot-dot'+(s<sl.used?' used':'')+'" onclick="toggleSlot('+lvl+','+s+')"></div>';
+    }
+    box.innerHTML='<div class="sl-head">'+
+      '<span class="sl-lbl">Livello '+lv+'</span>'+
+      '<div class="sl-slots" style="display:flex;align-items:center;gap:3px;">'+slotsHtml+
+        '<input type="number" min="0" max="9" value="'+(sl.tot||0)+'" title="Slot totali" '+
+        'style="width:24px;background:transparent;border:none;border-bottom:1px solid rgba(160,120,32,0.3);font-family:Cormorant SC,serif;font-size:11px;color:var(--g);text-align:center;outline:none;margin-left:4px;" '+
+        'onchange="D.slots['+lv+'].tot=parseInt(this.value)||0;rSpells()">'+
+        '<span style="font-size:9px;color:var(--ink3);margin:0 2px">/</span>'+
+        '<button style="font-size:9px;background:rgba(139,0,0,0.15);border:1px solid rgba(139,0,0,0.3);color:#e06060;border-radius:3px;padding:1px 5px;cursor:pointer;" onclick="resetSlots('+lv+')" title="Reset slot">↺</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="sl-body" id="sp-'+lv+'"></div>'+
+    '<div style="padding:2px 8px 6px;"><button class="add-btn" onclick="addSpell('+lv+')">+ incantesimo</button></div>';
+    sg.appendChild(box);
+    var body=document.getElementById('sp-'+lv);
+    spells.forEach(function(sp,si){
+      var r=document.createElement('div');r.className='spell-row';
+      r.innerHTML='<div class="spell-prep '+(sp.prep?'on':'')+'" onclick="togglePrep('+lvl+','+si+')" title="Preparato"></div>'+
+        '<input class="spell-name-input" value="'+(sp.n||'')+'" placeholder="Nome incantesimo..." onchange="D.spells['+lvl+']['+si+'].n=this.value">'+
+        '<button class="del-btn" onclick="delSpell('+lvl+','+si+')">✕</button>';
+      body.appendChild(r);
+    });
+    if(!spells.length){body.innerHTML='<div style="font-size:10px;color:var(--ink3);font-style:italic;padding:2px;">Nessun incantesimo.</div>';}
+  }
+}
+function addSpell(lv){D.spells[lv]=D.spells[lv]||[];D.spells[lv].push({n:'',prep:false});rSpells();}
+function delSpell(lv,i){D.spells[lv].splice(i,1);rSpells();}
+function togglePrep(lv,i){D.spells[lv][i].prep=!D.spells[lv][i].prep;rSpells();}
+function toggleSlot(lv,idx){
+  var sl=D.slots[lv]||{tot:0,used:0};
+  sl.used=(sl.used===idx+1)?idx:idx+1;
+  D.slots[lv]=sl;rSpells();
+}
+function resetSlots(lv){D.slots[lv].used=0;rSpells();}
+
+/* SPERANZA */
+function rSpe(){
+  var v=parseInt(document.getElementById('f-spe').value)||0;
+  var mx=parseInt(document.getElementById('f-spemax').value)||33;
+  var c=document.getElementById('spe-d');c.innerHTML='';
+  var show=Math.min(mx,50);
+  for(var i=1;i<=show;i++){
+    var d=document.createElement('div');
+    d.className='sdot'+(i<=v?' on':'')+(i<=5?' w':'');
+    (function(idx){d.onclick=function(){document.getElementById('f-spe').value=idx;D.spe=idx;rSpe();};})(i);
+    c.appendChild(d);
+  }
+}
+
+/* RISORSE */
+function rRes(){
+  var c=document.getElementById('res-list');c.innerHTML='';
+  if(!D.res||!D.res.length){c.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;">Nessuna risorsa. Clicca "+ risorsa".</div>';return;}
+  D.res.forEach(function(r,i){
+    var row=document.createElement('div');row.className='res-row';
+    row.innerHTML='<input class="res-name-in" value="'+(r.n||'')+'" placeholder="Nome risorsa" onchange="D.res['+i+'].n=this.value">'+
+      '<input type="number" class="res-cur" value="'+(r.cur||0)+'" min="0" onchange="D.res['+i+'].cur=parseInt(this.value)||0">'+
+      '<span style="color:var(--ink3);font-size:11px">/</span>'+
+      '<input type="number" class="res-max-in" value="'+(r.max||0)+'" min="0" title="Massimo" onchange="D.res['+i+'].max=parseInt(this.value)||0">'+
+      '<button class="del-btn" onclick="delRes('+i+')">✕</button>';
+    c.appendChild(row);
+  });
+}
+function addRes(){D.res=D.res||[];D.res.push({n:'',cur:0,max:0});rRes();}
+function delRes(i){D.res.splice(i,1);rRes();}
+
+/* PRIVILEGI */
+function rPriv(){
+  var c=document.getElementById('pv-l');c.innerHTML='';
+  if(!D.pv||!D.pv.length){c.innerHTML='<div style="font-size:11px;color:var(--ink3);font-style:italic;">Nessun tratto. Clicca "+ aggiungi".</div>';return;}
+  D.pv.forEach(function(p,i){
+    var d=document.createElement('div');d.className='priv-item';
+    d.innerHTML='<div style="flex:1">'+
+      '<input class="priv-name-input" placeholder="Nome tratto" value="'+(p.n||'')+'" onchange="D.pv['+i+'].n=this.value">'+
+      '<input class="priv-desc-input" placeholder="Descrizione..." value="'+(p.d||'')+'" onchange="D.pv['+i+'].d=this.value">'+
+      '</div><button class="del-btn" onclick="delPriv('+i+')">✕</button>';
+    c.appendChild(d);
+  });
+}
+function addPriv(){D.pv=D.pv||[];D.pv.push({n:'',d:''});rPriv();}
+function delPriv(i){D.pv.splice(i,1);rPriv();}
+
+function rAll(){rfTS();rfAb();}
+
+/* THEME */
+function setTheme(name,btn){
+  document.body.className='t-'+name;D.theme=name;
+  document.querySelectorAll('.tdot').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  document.getElementById('cpk').classList.remove('show');
+}
+function togCustom(btn){
+  var p=document.getElementById('cpk');
+  if(p.classList.contains('show')){p.classList.remove('show');}
+  else{p.classList.add('show');document.querySelectorAll('.tdot').forEach(b=>b.classList.remove('on'));btn.classList.add('on');D.theme='custom';applyCustom();}
+}
+function lum(hex,amt){
+  var n=parseInt(hex.replace('#',''),16);
+  var r=Math.min(255,Math.max(0,(n>>16)+amt));
+  var g=Math.min(255,Math.max(0,((n>>8)&0xff)+amt));
+  var b2=Math.min(255,Math.max(0,(n&0xff)+amt));
+  return'#'+[r,g,b2].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function applyCustom(){
+  var r=document.getElementById('cp1').value,g=document.getElementById('cp2').value,bg=document.getElementById('cp3').value;
+  var isDark=parseInt(bg.replace('#',''),16)<0x888888;
+  var root=document.body;root.className='';
+  root.style.setProperty('--r',r);root.style.setProperty('--rl',lum(r,20));root.style.setProperty('--rd',lum(r,-30));
+  root.style.setProperty('--g',g);root.style.setProperty('--gl',lum(g,20));
+  root.style.setProperty('--bg',bg);root.style.setProperty('--s1',lum(bg,isDark?8:-8));
+  root.style.setProperty('--s2',lum(bg,isDark?14:-14));root.style.setProperty('--s3',lum(bg,isDark?22:-22));
+  root.style.setProperty('--ink',isDark?'#f0e8d8':'#1a1208');root.style.setProperty('--ink2',isDark?'#c0b090':'#4a3820');
+  root.style.setProperty('--ink3',isDark?'#807060':'#8a7050');root.style.setProperty('--border','rgba(160,120,32,0.18)');
+  root.style.setProperty('--borderl','rgba(160,120,32,0.35)');root.style.setProperty('--panel','rgba(255,255,255,0.03)');
+  root.style.setProperty('--panelh','rgba(255,255,255,0.06)');
+}
+
+/* SAVE/LOAD */
+function collect(){
+  ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
+    var e=document.getElementById('f-'+k);if(e)D[k]=e.value;
+  });
+  D.spe=parseInt(document.getElementById('f-spe').value)||0;
+  D.speMax=parseInt(document.getElementById('f-spemax').value)||33;
+  D.di=document.getElementById('di-d').classList.contains('on');
+  D.spCar=document.getElementById('sp-car').value;
+  D.spCd=document.getElementById('sp-cd').value;
+  D.spBon=document.getElementById('sp-bon').value;
+  D.car.forEach(function(c){var i=document.querySelector('[data-ck="'+c.k+'"]');if(i)c.v=parseInt(i.value)||10;});
+}
+function salva(){
+  collect();
+  var key='inferno_gen_'+(D.nome||'scheda');
+  localStorage.setItem(key,JSON.stringify(D));
+  localStorage.setItem('inferno_gen_last',key);
+  var m=document.getElementById('sv-msg');m.classList.add('show');
+  setTimeout(function(){m.classList.remove('show');},2000);
+}
+function ripr(){
+  var key=localStorage.getItem('inferno_gen_last');
+  if(key){var r=localStorage.getItem(key);if(r){try{D=JSON.parse(r);applyAll();}catch(e){}}}
+}
+function nuova(){
+  if(confirm('Creare una nuova scheda vuota?')){
+    var th=D.theme;
+    D={theme:th,nome:'',cls:'',all:'',pec:'',pfx:'',pf:'',ca:'',ini:'',vel:'',prf:'+2',vir:'',viz:'',cr:'',nt:'',spe:33,speMax:33,di:false,spCar:'',spCd:'',spBon:'',
+      car:[{n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},{n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}],
+      ts:[{n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},{n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}],
+      ab:[{n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},{n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},{n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},{n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},{n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},{n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},{n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},{n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}],
+      em:[],atk:[],pv:[],res:[],
+      spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
+      slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}
+    };applyAll();
+  }
+}
+function exportJSON(){
+  collect();
+  var b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=(D.nome||'Smarrito')+'_Inferno.json';a.click();
+}
+function importJSON(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{D=JSON.parse(ev.target.result);applyAll();}catch(err){alert('File non valido');}};
+  r.readAsText(f);e.target.value='';
+}
+function applyAll(){
+  ['nome','cls','all','pec','pfx','pf','ca','ini','vel','prf','vir','viz','cr','nt'].forEach(function(k){
+    var e=document.getElementById('f-'+k);if(e&&D[k]!==undefined)e.value=D[k];
+  });
+  document.getElementById('f-spe').value=D.spe||33;
+  document.getElementById('f-spemax').value=D.speMax||33;
+  if(D.di)document.getElementById('di-d').classList.add('on');
+  else document.getElementById('di-d').classList.remove('on');
+  var sc=document.getElementById('sp-car');if(sc)sc.value=D.spCar||'';
+  var sd=document.getElementById('sp-cd');if(sd)sd.value=D.spCd||'';
+  var sb=document.getElementById('sp-bon');if(sb)sb.value=D.spBon||'';
+  if(!D.spells){D.spells={0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};}
+  if(!D.slots){D.slots={1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}};}
+  if(D.theme&&D.theme!=='custom'){var b=document.querySelector('[data-t="'+D.theme+'"]');setTheme(D.theme,b);}
+  rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();rAll();
+}
+
+// INIT
+rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();
+var sk=localStorage.getItem('inferno_gen_last');
+if(sk){var sv=localStorage.getItem(sk);if(sv){try{D=JSON.parse(sv);applyAll();}catch(e){}}}
+window.addEventListener('beforeunload',function(){collect();localStorage.setItem('inferno_gen_'+(D.nome||'scheda'),JSON.stringify(D));});
+</script>
+</body>
+</html>
