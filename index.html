@@ -257,6 +257,31 @@ footer {
   .footer-links { justify-content:center; }
   .hero-divider { height:48px;margin:36px auto; }
 }
+/* Tasto elimina sulla card */
+.del-card-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(139, 0, 0, 0.1);
+  border: 1px solid rgba(139, 0, 0, 0.3);
+  color: var(--r);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s;
+  z-index: 10; /* Sopra al link della card */
+}
+
+.del-card-btn:hover {
+  background: var(--r);
+  color: #fff;
+  transform: scale(1.1);
+}
 </style>
 </head>
 <body>
@@ -317,6 +342,8 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChang
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, query, where, getDocs } 
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } 
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const firebaseConfig = {
   apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
   authDomain:        "inferno-schede.firebaseapp.com",
@@ -346,7 +373,21 @@ btnLogin.onclick = () => signInWithPopup(auth, provider);
 
 // Funzione di Logout
 btnLogout.onclick = () => signOut(auth).then(() => location.reload());
+window.cancellaScheda = async function(idDocumento, event) {
+  event.preventDefault(); // Impedisce di aprire la scheda quando clicchi sulla X
+  event.stopPropagation();
 
+  if (confirm("Sei sicuro di voler abbandonare questo Smarrito nel baratro? La scheda verrà eliminata per sempre.")) {
+    try {
+      await deleteDoc(doc(db, "schede", idDocumento));
+      alert("Scheda eliminata. Il suo viaggio si interrompe qui.");
+      location.reload(); // Ricarica la lista
+    } catch (err) {
+      console.error("Errore durante l'eliminazione:", err);
+      alert("L'Inferno trattiene questa anima: errore durante l'eliminazione.");
+    }
+  }
+};
 // Controllo Accessi Dinamico
 // Controllo Accessi Dinamico
 onAuthStateChanged(auth, async (user) => {
@@ -389,23 +430,27 @@ onAuthStateChanged(auth, async (user) => {
     const querySnapshot = await getDocs(q);
     
     querySnapshot.forEach((docSnap) => {
-      // Ignoriamo un eventuale salvataggio di Bartolomeo dal DB per non fare un doppione
-      if (docSnap.id.includes('bartolomeo')) return;
+    if (docSnap.id.includes('bartolomeo') && user.email !== "rickbaldi25@gmail.com") return;
 
-      const info = docSnap.data();
-      const idScheda = docSnap.id.split('_').pop(); // Prende la parte finale dell'ID
-      const link = `Inferno_Scheda_Generica.html?id=${idScheda}`;
+  const info = docSnap.data();
+  const idScheda = docSnap.id.split('_').pop();
+  const isBart = docSnap.id.includes('bartolomeo');
+  const link = isBart ? 'Bartolomeo_Scheda.html' : `Inferno_Scheda_Generica.html?id=${idScheda}`;
 
-      // Creiamo la card per i personaggi generici
-      const card = document.createElement('a');
-      card.className = 'scheda-card';
-      card.href = link;
-      card.innerHTML = `
-        <span class="card-num">Smarrito</span>
-        <h2 class="card-name">${info.nome}</h2> 
-        <div class="card-cta">Apri Viaggio</div>
-      `;
-      container.appendChild(card);
+  const card = document.createElement('a');
+  card.className = 'scheda-card';
+  card.href = link;
+  
+  // Aggiungiamo il tasto X solo se NON è Bartolomeo
+  const deleteBtn = isBart ? '' : `<button class="del-card-btn" title="Elimina Personaggio" onclick="cancellaScheda('${docSnap.id}', event)">✕</button>`;
+
+  card.innerHTML = `
+    ${deleteBtn}
+    <span class="card-num">${isBart ? 'Speciale' : 'Smarrito'}</span>
+    <h2 class="card-name">${info.nome}</h2> 
+    <div class="card-cta">Apri Viaggio</div>
+  `;
+  container.appendChild(card);
     });
 
   } else {
@@ -415,6 +460,8 @@ onAuthStateChanged(auth, async (user) => {
     container.innerHTML = ''; // Nascondi le schede
   }
 });
+
+
 </script>
 <script>
 (function(){
