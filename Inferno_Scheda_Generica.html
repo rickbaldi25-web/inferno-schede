@@ -728,8 +728,12 @@ function salva(){
   var key='inferno_gen_'+(D.nome||'scheda');
   localStorage.setItem(key,JSON.stringify(D));
   localStorage.setItem('inferno_gen_last',key);
-  var m=document.getElementById('sv-msg');m.classList.add('show');
-  setTimeout(function(){m.classList.remove('show');},2000);
+  if(window._fbSaveGen){window._fbSaveGen(D);}
+  else{
+    var m=document.getElementById('sv-msg');
+    m.textContent='Salvato ✓';m.classList.add('show');
+    setTimeout(function(){m.classList.remove('show');},2000);
+  }
 }
 function ripr(){
   var key=localStorage.getItem('inferno_gen_last');
@@ -777,11 +781,113 @@ function applyAll(){
   rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();rAll();
 }
 
-// INIT
+// INIT locale
 rCar();rTS();rAb();rEmbl();rAtk();rSpells();rSpe();rRes();rPriv();
 var sk=localStorage.getItem('inferno_gen_last');
 if(sk){var sv=localStorage.getItem(sk);if(sv){try{D=JSON.parse(sv);applyAll();}catch(e){}}}
 window.addEventListener('beforeunload',function(){collect();localStorage.setItem('inferno_gen_'+(D.nome||'scheda'),JSON.stringify(D));});
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
+  authDomain:        "inferno-schede.firebaseapp.com",
+  projectId:         "inferno-schede",
+  storageBucket:     "inferno-schede.firebasestorage.app",
+  messagingSenderId: "368915835108",
+  appId:             "1:368915835108:web:43f8cbc47d5cb1f620a4f1"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+function setStatus(txt, color){
+  var m = document.getElementById('sv-msg');
+  m.textContent = txt;
+  m.style.color = color || 'var(--g)';
+  m.classList.add('show');
+}
+function hideStatus(){
+  setTimeout(function(){ document.getElementById('sv-msg').classList.remove('show'); }, 2500);
+}
+
+// Ogni personaggio ha il suo documento: uid_nomepersonaggio
+function docId(uid){
+  var nome = (window.D && window.D.nome) ? window.D.nome.toLowerCase().replace(/\s+/g,'_') : 'generica';
+  return uid + '_gen_' + nome;
+}
+
+async function fbSaveGen(data){
+  try {
+    const uid = auth.currentUser?.uid;
+    if(!uid){ setStatus('⚠ Non connesso', '#e06060'); hideStatus(); return; }
+    await setDoc(doc(db, 'schede', docId(uid)), {
+      data: JSON.stringify(data),
+      nome: data.nome || '',
+      updatedAt: new Date().toISOString()
+    });
+    setStatus('☁ Salvato ✓', 'var(--g)');
+    hideStatus();
+  } catch(err){
+    console.error(err);
+    setStatus('⚠ Errore salvataggio', '#e06060');
+    hideStatus();
+  }
+}
+window._fbSaveGen = fbSaveGen;
+
+async function fbLoad(uid){
+  try {
+    const id   = docId(uid);
+    const snap = await getDoc(doc(db, 'schede', id));
+    if(snap.exists()){
+      const parsed  = JSON.parse(snap.data().data);
+      const localRaw = localStorage.getItem('inferno_gen_last');
+      const localKey = localRaw ? localStorage.getItem(localRaw) : null;
+      const local    = localKey ? JSON.parse(localKey) : null;
+      const fbTime   = snap.data().updatedAt || '';
+      const useCloud = !local || fbTime > (local._savedAt||'');
+      if(useCloud){
+        window.D = parsed;
+        window.applyAll();
+        setStatus('☁ Caricato dal cloud', 'var(--g)');
+        hideStatus();
+      }
+    }
+  } catch(err){
+    console.error('fbLoad error:', err);
+  }
+}
+
+onAuthStateChanged(auth, function(user){
+  if(user){
+    var brand = document.querySelector('.toolbar-brand');
+    if(brand) brand.title = 'UID: ' + user.uid;
+    fbLoad(user.uid);
+  }
+});
+
+signInAnonymously(auth).catch(function(err){
+  console.error('Auth error:', err);
+  setStatus('☁ Offline', '#e06060');
+  hideStatus();
+});
+
+// Autosave ogni 60s
+setInterval(function(){
+  if(auth.currentUser && window.collect && window.D){
+    window.collect();
+    fbSaveGen(window.D);
+  }
+}, 60000);
 </script>
 </body>
 </html>

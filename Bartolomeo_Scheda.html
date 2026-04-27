@@ -1189,8 +1189,12 @@ function collect(){
 function salva(){
   collect();
   localStorage.setItem('inf_bart_v4',JSON.stringify(D));
-  var m=document.getElementById('sv-msg');m.classList.add('show');
-  setTimeout(function(){m.classList.remove('show');},2000);
+  if(window._fbSave){window._fbSave(D);}
+  else{
+    var m=document.getElementById('sv-msg');
+    m.textContent='Salvato ✓';m.classList.add('show');
+    setTimeout(function(){m.classList.remove('show');},2000);
+  }
 }
 function ripr(){
   var r=localStorage.getItem('inf_bart_v4');
@@ -1224,11 +1228,110 @@ function applyAll(){
   rCar();rTS();rAb();rEmbl();rAtk();rSpe();rKi();rKiAb();rPriv();updScBar();rAll();
 }
 
-// INIT
+// INIT locale
 rCar();rTS();rAb();rEmbl();rAtk();rSpe();rKi();rKiAb();rPriv();updScBar();
 var sv=localStorage.getItem('inf_bart_v4');
 if(sv){try{D=JSON.parse(sv);applyAll();}catch(e){}}
 window.addEventListener('beforeunload',function(){collect();localStorage.setItem('inf_bart_v4',JSON.stringify(D));});
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
+  authDomain:        "inferno-schede.firebaseapp.com",
+  projectId:         "inferno-schede",
+  storageBucket:     "inferno-schede.firebasestorage.app",
+  messagingSenderId: "368915835108",
+  appId:             "1:368915835108:web:43f8cbc47d5cb1f620a4f1"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// UI helpers
+function setStatus(txt, color){
+  var m = document.getElementById('sv-msg');
+  m.textContent = txt;
+  m.style.color = color || 'var(--g)';
+  m.classList.add('show');
+}
+function hideStatus(){
+  setTimeout(function(){ document.getElementById('sv-msg').classList.remove('show'); }, 2500);
+}
+
+// Salvataggio su Firestore
+async function fbSave(data){
+  try {
+    const uid = auth.currentUser?.uid;
+    if(!uid){ setStatus('⚠ Non connesso', '#e06060'); hideStatus(); return; }
+    await setDoc(doc(db, 'schede', uid + '_bartolomeo'), {
+      data: JSON.stringify(data),
+      updatedAt: new Date().toISOString()
+    });
+    setStatus('☁ Salvato ✓', 'var(--g)');
+    hideStatus();
+  } catch(err){
+    console.error(err);
+    setStatus('⚠ Errore salvataggio', '#e06060');
+    hideStatus();
+  }
+}
+window._fbSave = fbSave;
+
+// Caricamento da Firestore
+async function fbLoad(uid){
+  try {
+    const snap = await getDoc(doc(db, 'schede', uid + '_bartolomeo'));
+    if(snap.exists()){
+      const parsed = JSON.parse(snap.data().data);
+      // Firestore ha la versione più recente?
+      const localRaw = localStorage.getItem('inf_bart_v4');
+      const local    = localRaw ? JSON.parse(localRaw) : null;
+      const fbTime   = snap.data().updatedAt || '';
+      const useCloud = !local || fbTime > (local._savedAt||'');
+      if(useCloud){
+        window.D = parsed;
+        window.applyAll();
+        setStatus('☁ Caricato dal cloud', 'var(--g)');
+        hideStatus();
+      }
+    }
+  } catch(err){
+    console.error('fbLoad error:', err);
+  }
+}
+
+// Auth
+onAuthStateChanged(auth, function(user){
+  if(user){
+    // Mostra UID abbreviato nella toolbar
+    var brand = document.querySelector('.toolbar-brand');
+    if(brand) brand.title = 'UID: ' + user.uid;
+    fbLoad(user.uid);
+  }
+});
+
+signInAnonymously(auth).catch(function(err){
+  console.error('Auth error:', err);
+  setStatus('☁ Offline', '#e06060');
+  hideStatus();
+});
+
+// Salvataggio automatico ogni 60s
+setInterval(function(){
+  if(auth.currentUser && window.collect && window.D){
+    window.collect();
+    fbSave(window.D);
+  }
+}, 60000);
 </script>
 </body>
 </html>
