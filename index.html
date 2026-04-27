@@ -281,41 +281,25 @@ footer {
 <section class="cards-section">
   <p class="cards-label">Schede Personaggio</p>
   <div class="cards-grid">
-
-    <a class="scheda-card" href="Bartolomeo_Scheda.html">
+    <a class="scheda-card" id="card-bartolomeo" href="Bartolomeo_Scheda.html" style="display: none;">
       <span class="card-num">Scheda 01</span>
       <h2 class="card-name">Bartolomeo</h2>
-      <p class="card-subtitle">Lo Schiavo · Monaco Smarrito · Livello 2</p>
-      <p class="card-desc">
-        Ex soldato condannato all'Antinferno per ignavia. Scheda precompilata
-        con emblemi delle Catene, tracker sciame di vespe e percorso di redenzione.
-      </p>
-      <div class="card-tags">
-        <span class="tag">Monaco</span>
-        <span class="tag">Punti Ki</span>
-        <span class="tag">Catene</span>
-        <span class="tag">Vespe</span>
-      </div>
-      <div class="card-cta">Apri scheda</div>
-    </a>
+      </a>
 
-    <a class="scheda-card" href="Inferno_Scheda_Generica.html">
+    <a class="scheda-card" id="card-smarrito" href="Inferno_Scheda_Generica.html" style="display: none;">
       <span class="card-num">Scheda 02</span>
       <h2 class="card-name">Smarrito</h2>
-      <p class="card-subtitle">Scheda Generica · Qualsiasi Archetipo</p>
-      <p class="card-desc">
-        Scheda vuota e completamente personalizzabile. Supporta incantesimi
-        con slot per livello, risorse custom e tutti e dodici gli archetipi di Inferno.
-      </p>
-      <div class="card-tags">
-        <span class="tag">Generica</span>
-        <span class="tag">Magie</span>
-        <span class="tag">Slot incantesimo</span>
-      </div>
-      <div class="card-cta">Apri scheda</div>
-    </a>
+      </a>
+</div>
 
-  </div>
+<div style="text-align:center; margin-top: 40px; position: relative; z-index: 10;">
+  <button id="btn-login" class="hero-desc" style="background: var(--s1); border: 1px solid var(--g); padding: 10px 20px; cursor: pointer; color: var(--g); font-family: 'Cormorant SC', serif; letter-spacing: 2px;">
+    Accedi per iniziare il Viaggio
+  </button>
+  <button id="btn-logout" style="display:none; background: transparent; border: none; color: var(--ink3); cursor: pointer; text-transform: uppercase; font-size: 10px; letter-spacing: 2px;">
+    Esci dall'account
+  </button>
+</div>
 </section>
 
 <div class="quote-section">
@@ -335,7 +319,59 @@ footer {
     <a class="footer-link" href="Inferno_Scheda_Generica.html">Generica</a>
   </div>
 </footer>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
+const firebaseConfig = {
+  apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
+  authDomain:        "inferno-schede.firebaseapp.com",
+  projectId:         "inferno-schede",
+  storageBucket:     "inferno-schede.firebasestorage.app",
+  messagingSenderId: "368915835108",
+  appId:             "1:368915835108:web:43f8cbc47d5cb1f620a4f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const btnLogin = document.getElementById('btn-login');
+const btnLogout = document.getElementById('btn-logout');
+const cardBart = document.getElementById('card-bartolomeo');
+const cardGen = document.getElementById('card-smarrito');
+
+// Funzione di Login
+btnLogin.onclick = () => signInWithPopup(auth, provider);
+
+// Funzione di Logout
+btnLogout.onclick = () => signOut(auth).then(() => location.reload());
+
+// Controllo Accessi Dinamico
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // Qualcuno è loggato
+    btnLogin.style.display = 'none';
+    btnLogout.style.display = 'inline-block';
+    
+    // Mostra SEMPRE la scheda generica agli utenti loggati
+    cardGen.style.display = 'flex';
+
+    // Mostra Bartolomeo SOLO a te
+    if (user.email === "rickbaldi25@gmail.com") {
+      cardBart.style.display = 'flex';
+      console.log("Benvenuto, Sommo Poeta.");
+    }
+  } else {
+    // Nessuno è loggato
+    btnLogin.style.display = 'inline-block';
+    btnLogout.style.display = 'none';
+    cardBart.style.display = 'none';
+    cardGen.style.display = 'none';
+  }
+});
+</script>
 <script>
 (function(){
   const c = document.getElementById('embers');
