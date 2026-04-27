@@ -16,7 +16,16 @@ const firebaseConfig = {
   messagingSenderId: "368915835108",
   appId:             "1:368915835108:web:43f8cbc47d5cb1f620a4f1"
 };
-
+// Registrazione Service Worker per installare la PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then((registration) => {
+      console.log('ServiceWorker registrato con successo: ', registration.scope);
+    }).catch((err) => {
+      console.log('Registrazione ServiceWorker fallita: ', err);
+    });
+  });
+}
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -71,7 +80,7 @@ if (audio && musicBtn) {
 // --- 4. FUNZIONI SCHEDA ---
 window.creaNuovaScheda = function() {
   const nuovoId = 'sheet_' + Date.now();
-  window.location.href = `Inferno_Scheda_Generica.html?id=${nuovoId}`;
+  window.location.href = `/Inferno_Scheda_Generica?id=${nuovoId}`;
 }; 
 
 window.cancellaScheda = async function(idDocumento, event) {
@@ -124,7 +133,7 @@ onAuthStateChanged(auth, async (user) => {
     if (user.email === "rickbaldi25@gmail.com") {
       const cardBart = document.createElement('a');
       cardBart.className = 'scheda-card';
-      cardBart.href = 'Bartolomeo_Scheda.html';
+cardBart.href = '/Bartolomeo_Scheda';
       cardBart.innerHTML = `
         <span class="card-num">Scheda 01</span>
         <h2 class="card-name">Bartolomeo</h2> 
@@ -144,8 +153,7 @@ onAuthStateChanged(auth, async (user) => {
         renderedIds.add(docSnap.id);
         const info = docSnap.data();
         const idScheda = docSnap.id.split('_').pop();
-        const link = `Inferno_Scheda_Generica.html?id=${idScheda}`;
-
+const link = `/Inferno_Scheda_Generica?id=${idScheda}`;
         const card = document.createElement('a');
         card.className = 'scheda-card';
         card.href = link;
