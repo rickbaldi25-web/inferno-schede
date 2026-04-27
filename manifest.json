@@ -1,10 +1,10 @@
 {
   "name": "Inferno: Scheda Personaggio",
   "short_name": "Inferno",
-  "description": "Scheda generica per Inferno RPG",
-  "start_url": "./Inferno_Scheda_Generica.html",
+  "description": "Schede dei personaggi per Inferno RPG",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a0908",
+  "background_color": "#080706",
   "theme_color": "#8B0000",
   "icons": [
     {
