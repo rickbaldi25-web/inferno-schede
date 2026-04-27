@@ -282,6 +282,46 @@ footer {
   color: #fff;
   transform: scale(1.1);
 }
+
+/* Tasto Musica Fluttuante */
+.music-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  background: rgba(10, 9, 8, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--ink3);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.music-toggle:hover {
+  border-color: var(--g);
+  color: var(--g);
+  transform: scale(1.1);
+}
+
+.music-toggle.playing {
+  color: var(--g);
+  border-color: var(--g);
+  animation: pulse-music 2s infinite;
+}
+
+@keyframes pulse-music {
+  0% { box-shadow: 0 0 0 0 rgba(160, 120, 32, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(160, 120, 32, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(160, 120, 32, 0); }
+}
 </style>
 </head>
 <body>
@@ -327,7 +367,13 @@ footer {
   </p>
   <p class="quote-source">Dante Alighieri · Inferno, Canto I, 1–3</p>
 </div>
+<audio id="bg-audio" loop>
+  <source src="tema.mp3" type="audio/mpeg">
+</audio>
 
+<button id="music-btn" class="music-toggle" title="Attiva l'atmosfera sonora">
+  🔇
+</button>
 <footer>
   <span class="footer-brand">Inferno</span>
   <div class="footer-links">
@@ -484,6 +530,29 @@ onAuthStateChanged(auth, async (user) => {
     c.appendChild(e);
   }
 })();
+</script>
+<script>
+  const audio = document.getElementById('bg-audio');
+  const musicBtn = document.getElementById('music-btn');
+  let isPlaying = false;
+
+  // Imposta il volume (0.3 significa 30%, ideale per sottofondi per non assordare chi entra)
+  audio.volume = 0.3; 
+
+  musicBtn.addEventListener('click', function() {
+    if (isPlaying) {
+      audio.pause();
+      musicBtn.textContent = '🔇';
+      musicBtn.classList.remove('playing');
+    } else {
+      audio.play().catch(function(error) {
+        console.log("Il browser ha bloccato l'audio:", error);
+      });
+      musicBtn.textContent = '🔊';
+      musicBtn.classList.add('playing');
+    }
+    isPlaying = !isPlaying;
+  });
 </script>
 </body>
 </html>
