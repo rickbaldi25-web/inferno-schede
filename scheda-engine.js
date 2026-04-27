@@ -166,7 +166,7 @@ window.rSpells = () => {
             '<div class="sl-slots" style="display:flex; align-items:center; gap:4px;">' + slotsHtml +
                 '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" title="Slot totali" ' +
                 'style="width:24px; background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); font-family:\'Cormorant SC\',serif; font-size:14px; color:var(--g); text-align:center; outline:none;" ' +
-                'onchange="D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
+                'onchange="if(!D.slots[' + lv + '])D.slots[' + lv + ']={tot:0,used:0};D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
                 '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')" title="Reset slot">↺</button>' +
             '</div>' +
         '</div>' +
@@ -192,7 +192,7 @@ window.addSpell = (lv) => { D.spells[lv] = D.spells[lv] || []; D.spells[lv].push
 window.delSpell = (lv, i) => { D.spells[lv].splice(i, 1); window.rSpells(); };
 window.togglePrep = (lv, i) => { D.spells[lv][i].prep = !D.spells[lv][i].prep; window.rSpells(); };
 window.toggleSlot = (lv, idx) => { var sl = D.slots[lv] || { tot: 0, used: 0 }; sl.used = (sl.used === idx + 1) ? idx : idx + 1; D.slots[lv] = sl; window.rSpells(); };
-window.resetSlots = (lv) => { D.slots[lv].used = 0; window.rSpells(); };
+window.resetSlots = (lv) => { if (!D.slots[lv]) D.slots[lv] = { tot: 0, used: 0 }; D.slots[lv].used = 0; window.rSpells(); };
 
 // --- SPERANZA & RISORSE ---
 window.rSpe = () => {
@@ -269,6 +269,7 @@ window.collect = () => {
 
 window.salva = () => {
     window.collect();
+    D._savedAt = new Date().toISOString();
     var key = 'inferno_gen_' + (D.nome || 'scheda');
     localStorage.setItem(key, JSON.stringify(D));
     localStorage.setItem('inferno_gen_last', key);
