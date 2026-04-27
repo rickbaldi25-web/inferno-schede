@@ -498,3 +498,29 @@ body.master-view .avatar-box:hover {
   transform: none;
   border-color: var(--g);
 }
+
+/* Modalità Master - Blocco Totale di ogni interazione */
+body.master-view input, 
+body.master-view textarea, 
+body.master-view select { 
+  pointer-events: none !important; 
+  border-bottom-color: transparent !important; 
+}
+
+body.master-view .add-btn, 
+body.master-view .del-btn, 
+body.master-view .tb-btn.primary, 
+body.master-view .ki-max-input { 
+  display: none !important; 
+}
+
+/* Blocca tutti i pallini cliccabili (Speranza, Ki, Ispirazione, Preparazione) */
+body.master-view .pdot, 
+body.master-view .sdot, 
+body.master-view .ki-dot, 
+body.master-view .sl-slot-dot, 
+body.master-view .spell-prep, 
+body.master-view .di-dot,
+body.master-view .avatar-box { 
+  pointer-events: none !important; 
+}

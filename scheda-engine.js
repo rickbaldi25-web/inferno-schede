@@ -111,15 +111,20 @@ window.edAtk = (i, f, td) => {
 window.addAtk = () => { D.atk.push({ n: '', b: '', d: '', nt: '' }); window.rAtk(); };
 window.delAtk = (i) => { D.atk.splice(i, 1); window.rAtk(); };
 
-// --- MAGIE ---
+// --- MAGIE (Versione con Descrizione) ---
 window.rSpells = () => {
     var c0 = document.getElementById('sp-0'); if (!c0) return; c0.innerHTML = '';
     (D.spells[0] || []).forEach(function (s, i) {
         var r = document.createElement('div'); r.className = 'spell-row';
-        r.innerHTML = '<input class="spell-name-input" value="' + (s.n || '') + '" placeholder="Nome trucchetto..." onchange="D.spells[0][' + i + '].n=this.value">' +
-            '<button class="del-btn" onclick="delSpell(0,' + i + ')">✕</button>';
+        r.style.flexDirection = 'column'; r.style.alignItems = 'stretch'; r.style.gap = '4px';
+        r.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' +
+            '<input class="spell-name-input" value="' + (s.n || '') + '" placeholder="Nome trucchetto..." onchange="D.spells[0][' + i + '].n=this.value">' +
+            '<button class="del-btn" onclick="window.delSpell(0,' + i + ')">✕</button>' +
+        '</div>' +
+        '<input class="spell-desc-input" value="' + (s.d || '') + '" placeholder="Effetto del trucchetto..." onchange="D.spells[0][' + i + '].d=this.value" style="font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:4px; outline:none; font-style:italic;">';
         c0.appendChild(r);
     });
+    
     var sg = document.getElementById('spell-grid'); if (!sg) return; sg.innerHTML = '';
     for (var lv = 1; lv <= 9; lv++) {
         var sl = D.slots[lv] || { tot: 0, used: 0 };
@@ -127,22 +132,39 @@ window.rSpells = () => {
         var box = document.createElement('div'); box.className = 'spell-level';
         var lvl = lv;
         var slotsHtml = '';
-        for (var s = 0; s < Math.max(sl.tot || 0, 0); s++) { slotsHtml += '<div class="sl-slot-dot' + (s < sl.used ? ' used' : '') + '" onclick="toggleSlot(' + lvl + ',' + s + ')"></div>'; }
-        box.innerHTML = '<div class="sl-head"><span class="sl-lbl">Livello ' + lv + '</span><div class="sl-slots">' + slotsHtml +
-            '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" onchange="D.slots[' + lv + '].tot=parseInt(this.value)||0;rSpells()">' +
-            '<button onclick="resetSlots(' + lv + ')">↺</button></div></div><div class="sl-body" id="sp-' + lv + '"></div>' +
-            '<div style="padding:2px 8px 6px;"><button class="add-btn" onclick="addSpell(' + lv + ')">+ incantesimo</button></div>';
+        for (var s = 0; s < Math.max(sl.tot || 0, 0); s++) { 
+            slotsHtml += '<div class="sl-slot-dot' + (s < sl.used ? ' used' : '') + '" onclick="window.toggleSlot(' + lvl + ',' + s + ')"></div>'; 
+        }
+        
+        box.innerHTML = '<div class="sl-head" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--borderl); margin-bottom:6px;">' +
+            '<span class="sl-lbl" style="white-space:nowrap; font-size:11px; color:var(--g); letter-spacing:1px;">Livello ' + lv + '</span>' +
+            '<div class="sl-slots" style="display:flex; align-items:center; gap:4px;">' + slotsHtml +
+                '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" ' +
+                'style="width:24px; background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); font-family:\'Cormorant SC\',serif; font-size:14px; color:var(--g); text-align:center; outline:none;" ' +
+                'onchange="D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
+                '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')">↺</button>' +
+            '</div>' +
+        '</div>' +
+        '<div class="sl-body" id="sp-' + lv + '"></div>' +
+        '<div style="padding:4px 0;"><button class="add-btn" onclick="window.addSpell(' + lv + ')">+ incantesimo</button></div>';
+        
         sg.appendChild(box);
         var body = document.getElementById('sp-' + lv);
         spells.forEach(function (sp, si) {
             var r = document.createElement('div'); r.className = 'spell-row';
-            r.innerHTML = '<div class="spell-prep ' + (sp.prep ? 'on' : '') + '" onclick="togglePrep(' + lvl + ',' + si + ')"></div>' +
-                '<input class="spell-name-input" value="' + (sp.n || '') + '" onchange="D.spells[' + lvl + '][' + si + '].n=this.value">' +
-                '<button class="del-btn" onclick="delSpell(' + lvl + ',' + si + ')">✕</button>';
+            r.style.flexDirection = 'column'; r.style.alignItems = 'stretch'; r.style.gap = '4px';
+            r.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' +
+                '<div class="spell-prep ' + (sp.prep ? 'on' : '') + '" onclick="window.togglePrep(' + lvl + ',' + si + ')"></div>' +
+                '<input class="spell-name-input" value="' + (sp.n || '') + '" onchange="D.spells[' + lvl + '][' + si + '].n=this.value" placeholder="Nome incantesimo...">' +
+                '<button class="del-btn" onclick="window.delSpell(' + lvl + ',' + si + ')">✕</button>' +
+            '</div>' +
+            '<input class="spell-desc-input" value="' + (sp.d || '') + '" onchange="D.spells[' + lvl + '][' + si + '].d=this.value" placeholder="Descrizione effetto..." style="font-size:10px; color:var(--ink3); background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.1); margin-left:24px; outline:none; font-style:italic;">';
             body.appendChild(r);
         });
     }
 };
+
+
 window.addSpell = (lv) => { D.spells[lv] = D.spells[lv] || []; D.spells[lv].push({ n: '', prep: false }); window.rSpells(); };
 window.delSpell = (lv, i) => { D.spells[lv].splice(i, 1); window.rSpells(); };
 window.togglePrep = (lv, i) => { D.spells[lv][i].prep = !D.spells[lv][i].prep; window.rSpells(); };
@@ -248,9 +270,23 @@ window.applyAll = () => {
 
 // --- SPECIAL FEATURES ---
 window.copiaLinkMaster = () => {
-    var url = window.location.href.split('&view=true')[0];
-    if (!url.includes('?')) url += '?id=default';
-    navigator.clipboard.writeText(url + '&view=true').then(() => alert("Link Master Copiato!"));
+    // Puliamo l'URL attuale da eventuali parametri di visualizzazione esistenti
+    let url = window.location.href.split('&view=true')[0].split('?view=true')[0];
+    
+    // Decidiamo se usare ? o &
+    let joiner = url.includes('?') ? '&' : '?';
+    
+    // Se siamo nella scheda generica ma non c'è un ID, ne mettiamo uno di fallback
+    if (window.location.pathname.includes('Generica') && !url.includes('id=')) {
+        url += joiner + 'id=default';
+        joiner = '&';
+    }
+    
+    const masterUrl = url + joiner + 'view=true';
+    
+    navigator.clipboard.writeText(masterUrl).then(() => {
+        alert("Link Master Copiato! Inviandolo al Master, lui vedrà la scheda senza poterla modificare.");
+    });
 };
 
 window.esportaPDF = () => {

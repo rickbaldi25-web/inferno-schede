@@ -476,7 +476,6 @@ window.applyAll = function(){
   window.rKi(); window.updScBar(); 
 };
 
-// E. Inizializzazione Master e Autosave specifico
 window.addEventListener('load', function() {
   if (window.location.search.includes('view=true')) document.body.classList.add('master-view');
   
@@ -489,7 +488,7 @@ window.addEventListener('load', function() {
       localStorage.setItem('inf_bart_v4', JSON.stringify(D));
     });
   }
-  window.applyAll();
+  window.applyAll(); // Questa chiamerà internamente window.rKi() e window.updScBar()
 });
 </script>
 
