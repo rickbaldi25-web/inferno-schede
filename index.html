@@ -358,56 +358,47 @@ btnLogout.onclick = () => signOut(auth).then(() => location.reload());
 // Controllo Accessi Dinamico
 onAuthStateChanged(auth, async (user) => {
   const container = document.querySelector('.cards-grid');
-
   if (user) {
     btnLogin.style.display = 'none';
     btnLogout.style.display = 'inline-block';
     
-    // 1. Mostriamo Bartolomeo solo a te
-    if (user.email === "rickbaldi25@gmail.com") {
-      cardBart.style.display = 'flex';
-    }
+    // Puliamo il contenitore per rigenerare la lista
+    container.innerHTML = '';
 
-    // 2. Togliamo la vecchia "card-smarrito" fissa
-    if(cardGen) cardGen.style.display = 'none';
+    // 1. Aggiungiamo il tasto "NUOVO PERSONAGGIO"
+    const btnNuovo = document.createElement('div');
+    btnNuovo.className = 'scheda-card';
+    btnNuovo.style.cssText = 'border-style: dashed; justify-content: center; align-items: center; cursor: pointer;';
+    btnNuovo.innerHTML = '<h2 class="card-name" style="color: var(--g);">+ Nuovo</h2>';
+    btnNuovo.onclick = () => {
+       const nuovoId = 'sheet_' + Date.now(); // Crea un ID basato sul tempo
+       window.location.href = `Inferno_Scheda_Generica.html?id=${nuovoId}`;
+    };
+    container.appendChild(btnNuovo);
 
-    // 3. Creiamo il bottone "Nuovo Personaggio"
-    let htmlSchede = `
-      <div class="scheda-card" style="border-style: dashed; justify-content: center; align-items: center; cursor: pointer;" onclick="creaNuovaScheda()">
-        <h2 class="card-name" style="color: var(--g);">+ Nuovo Personaggio</h2>
-        <p class="card-desc" style="text-align: center;">Crea una nuova scheda vuota</p>
-      </div>
-    `;
+    // 2. Cerchiamo le tue schede nel database
+    const q = query(collection(db, "schede"), where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((docSnap) => {
+      // Se è Bartolomeo e non sei tu, la saltiamo (logica precedente)
+      if (docSnap.id.includes('bartolomeo') && user.email !== "rickbaldi25@gmail.com") return;
 
-    // 4. Interroghiamo Firestore per cercare le schede di questo utente
-    try {
-      const q = query(collection(db, "schede"), where("uid", "==", user.uid));
-      const querySnapshot = await getDocs(q);
-      
-      querySnapshot.forEach((doc) => {
-        // Saltiamo Bartolomeo se l'abbiamo già gestito sopra
-        if (doc.id.includes('_bartolomeo')) return; 
+      const info = docSnap.data();
+      const idScheda = docSnap.id.split('_').pop(); // Prende la parte finale dell'ID
+      const link = docSnap.id.includes('bartolomeo') ? 'Bartolomeo_Scheda.html' : `Inferno_Scheda_Generica.html?id=${idScheda}`;
 
-        const datiDb = doc.data();
-        let nomeChar = datiDb.nome || 'Smarrito Senza Nome';
-        let idUrl = doc.id.replace(user.uid + '_', ''); // Estraiamo solo l'ID (es. sheet_123)
-
-        // Creiamo la card per ogni personaggio trovato
-        htmlSchede += `
-          <a class="scheda-card" href="Inferno_Scheda_Generica.html?id=${idUrl}">
-            <span class="card-num">Scheda Salvata</span>
-            <h2 class="card-name">${nomeChar}</h2>
-            <div class="card-cta">Apri scheda</div>
-          </a>
-        `;
-      });
-      
-      // Inseriamo tutto nella griglia (mantenendo Bartolomeo se presente)
-      container.innerHTML = (user.email === "rickbaldi25@gmail.com" ? cardBart.outerHTML : '') + htmlSchede;
-
-    } catch(err) {
-      console.error("Errore nel caricamento delle schede:", err);
-    }
+      // Creiamo la card con il NOME DINAMICO
+      const card = document.createElement('a');
+      card.className = 'scheda-card';
+      card.href = link;
+      card.innerHTML = `
+        <span class="card-num">${docSnap.id.includes('bartolomeo') ? 'Speciale' : 'Smarrito'}</span>
+        <h2 class="card-name">${info.nome}</h2> 
+        <div class="card-cta">Apri Viaggio</div>
+      `;
+      container.appendChild(card);
+    });
 
   } else {
     // Utente offline: ripristina lo stato base
