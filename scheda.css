@@ -275,42 +275,52 @@ input[type="color"] { width: 20px; height: 20px; border: none; border-radius: 3p
 
 /* ── MOBILE OPTIMIZATIONS ── */
 @media(max-width:900px) {
-  .toolbar { padding: 0 16px; gap: 8px; }
+  /* Reset globale per prevenire lo scroll orizzontale */
+  html, body { 
+    overflow-x: hidden; 
+    width: 100vw; 
+    position: relative;
+  }
+
+  .toolbar { padding: 0 12px; gap: 8px; width: 100%; box-sizing: border-box; }
   .toolbar-brand { font-size: 13px; letter-spacing: 2px; }
   .tb-btn span { display: none; }
   
-  .hero { padding: 28px 20px 20px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 16px; }
+  .hero { padding: 24px 16px; width: 100%; box-sizing: border-box; }
+  .hero-grid { grid-template-columns: 1fr; gap: 16px; text-align: left; }
   .hero-right { align-items: flex-start; }
-  .hero-center { order: -1; }
-  .hero-title { font-size: 36px; letter-spacing: 4px; }
-  .field-input { width: 100%; }
+  .hero-center { order: -1; text-align: center; }
+  .hero-title { font-size: 32px; letter-spacing: 2px; word-wrap: break-word; }
+  .field-input { width: 100% !important; max-width: 100%; font-size: 15px; }
 
-  .vitals { padding: 0 16px; }
-  .vitals-inner { grid-template-columns: repeat(2, 1fr); }
-  .vital { padding: 12px 6px; } /* Riduciamo un pelo il padding */
-  .vital:nth-child(even) { border-right: none; } /* Rimuove il bordo destro della seconda colonna */
-  .vital:nth-child(odd) { border-right: 1px solid var(--border); } /* Mantiene il bordo della prima */
-  .vital:nth-child(n+3) { border-top: 1px solid var(--border); } /* Bordo superiore dalla 3° cella in poi */
+  .vitals { padding: 0; border-left: none; border-right: none; }
+  .vitals-inner { grid-template-columns: repeat(2, 1fr); width: 100%; }
+  .vital { padding: 12px 6px; min-width: 0; }
+  .vital:nth-child(even) { border-right: none; } 
+  .vital:nth-child(odd) { border-right: 1px solid var(--border); } 
+  .vital:nth-child(n+3) { border-top: 1px solid var(--border); } 
   .vital-val { font-size: 22px; }
 
-   .caract-col { 
+  .main { grid-template-columns: 1fr; padding: 16px 12px; gap: 20px; width: 100%; overflow-x: hidden; box-sizing: border-box; }
+  
+  .caract-col { 
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
     gap: 12px; 
   }
-
-   .caract-name { 
-    font-size: 8px; /* Leggermente più piccolo per evitare ritagli */
-    word-break: break-all; /* Se non ci sta, va a capo */
+  .caract-name { 
+    font-size: 8px; 
+    word-break: break-all; 
   }
    
-  .main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
-  .caract-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .skills-2col { grid-template-columns: 1fr; }
   .vv-grid { grid-template-columns: 1fr; }
   .spell-grid { grid-template-columns: repeat(2, 1fr); }
   .spell-cast-info { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* Scroll orizzontale limitato solo all'interno delle card per le tabelle */
+  .card { width: 100%; max-width: calc(100vw - 24px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { min-width: 450px; }
   
   /* Touch Targets più grandi per le dita */
   .pdot, .sl-slot-dot, .spell-prep, .sdot, .ki-dot { transform: scale(1.4); margin: 4px 6px; }
