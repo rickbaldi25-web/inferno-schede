@@ -152,9 +152,10 @@ onAuthStateChanged(auth, async (user) => {
         card.innerHTML = `
           <button class="del-card-btn" title="Elimina" onclick="window.cancellaScheda('${docSnap.id}', event)">✕</button>
           <span class="card-num">Smarrito</span>
-          <h2 class="card-name">${info.nome || 'Senza Nome'}</h2> 
+          <h2 class="card-name"></h2>
           <div class="card-cta">Apri Viaggio</div>
         `;
+        card.querySelector('.card-name').textContent = info.nome || 'Senza Nome';
         container.appendChild(card);
       });
     } catch (err) {
