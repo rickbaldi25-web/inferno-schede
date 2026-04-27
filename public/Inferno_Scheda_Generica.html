@@ -257,7 +257,8 @@ window.addEventListener('load', function() {
     if (!document.body.classList.contains('master-view')) {
         var sheetId = new URLSearchParams(window.location.search).get('id') || 'default';
         var sv = localStorage.getItem('inferno_gen_' + sheetId);
-        if(sv){ try{ D = JSON.parse(sv); window.applyAll(); } catch(e){} }
+        if(sv){ try{ D = JSON.parse(sv); } catch(e){} }
+        window.applyAll();
     }
 });
 </script>
