@@ -152,8 +152,8 @@ cardBart.href = '/Bartolomeo_Scheda';
         
         renderedIds.add(docSnap.id);
         const info = docSnap.data();
-        const idScheda = docSnap.id.split('_').pop();
-const link = `/Inferno_Scheda_Generica?id=${idScheda}`;
+        const idScheda = docSnap.id.substring(user.uid.length + 1);
+        const link = `/Inferno_Scheda_Generica?id=${idScheda}`;
         const card = document.createElement('a');
         card.className = 'scheda-card';
         card.href = link;
