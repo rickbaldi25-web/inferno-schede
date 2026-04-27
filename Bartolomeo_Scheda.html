@@ -268,13 +268,19 @@
     </div>
 
     <!-- PRIVILEGI -->
-    <div class="res-block">
+
+<div class="mob-section">
+  <div class="mob-toggle open" onclick="togMob(this)">Privilegi &amp; Tratti</div>
+  <div class="mob-content open">
+    <div class="res-block" style="border:none; padding:0;">
       <div class="res-head">
         <span class="res-name">Privilegi &amp; Tratti</span>
         <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
       </div>
       <div class="res-body" id="pv-l"></div>
     </div>
+  </div>
+</div>
 
     <!-- NOTE -->
     <div class="res-block">
@@ -482,15 +488,27 @@ window.addEventListener('load', function() {
   if (window.location.search.includes('view=true')) document.body.classList.add('master-view');
   
   if (!document.body.classList.contains('master-view')) {
+    // Salviamo un backup delle abilità di base di Bartolomeo scritte nell'HTML
+    var defaultKiAb = D.kiAb;
+    var defaultPv = D.pv;
+    
     var sv = localStorage.getItem('inf_bart_v4');
-    if(sv){ try{ D = JSON.parse(sv); } catch(e){} }
+    if(sv){ 
+      try { 
+        D = JSON.parse(sv); 
+        // FIX MAGICO: Se il salvataggio vecchio ha svuotato le liste, le ripristiniamo!
+        if (!D.kiAb || D.kiAb.length === 0) D.kiAb = defaultKiAb;
+        if (!D.pv || D.pv.length === 0) D.pv = defaultPv;
+      } catch(e){} 
+    }
     
     window.addEventListener('beforeunload', function(){
       window.collect();
       localStorage.setItem('inf_bart_v4', JSON.stringify(D));
     });
   }
-  window.applyAll(); // Questa chiamerà internamente window.rKi() e window.updScBar()
+  
+  window.applyAll(); 
 });
 </script>
 
