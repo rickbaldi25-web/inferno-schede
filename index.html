@@ -323,7 +323,8 @@ footer {
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
+import { getFirestore, collection, query, where, getDocs } 
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const firebaseConfig = {
   apiKey:            "AIzaSyAFtzNu6mzRI58umWN3-Y40o0UiI2YYPe8",
   authDomain:        "inferno-schede.firebaseapp.com",
@@ -336,11 +337,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
 
 const btnLogin = document.getElementById('btn-login');
 const btnLogout = document.getElementById('btn-logout');
 const cardBart = document.getElementById('card-bartolomeo');
 const cardGen = document.getElementById('card-smarrito');
+
+ window.creaNuovaScheda = function() {
+  const nuovoId = 'sheet_' + Date.now();
+  window.location.href = `Inferno_Scheda_Generica.html?id=${nuovoId}`;
+}; 
 
 // Funzione di Login
 btnLogin.onclick = () => signInWithPopup(auth, provider);
@@ -349,26 +356,64 @@ btnLogin.onclick = () => signInWithPopup(auth, provider);
 btnLogout.onclick = () => signOut(auth).then(() => location.reload());
 
 // Controllo Accessi Dinamico
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+  const container = document.querySelector('.cards-grid');
+
   if (user) {
-    // Qualcuno è loggato
     btnLogin.style.display = 'none';
     btnLogout.style.display = 'inline-block';
     
-    // Mostra SEMPRE la scheda generica agli utenti loggati
-    cardGen.style.display = 'flex';
-
-    // Mostra Bartolomeo SOLO a te
+    // 1. Mostriamo Bartolomeo solo a te
     if (user.email === "rickbaldi25@gmail.com") {
       cardBart.style.display = 'flex';
-      console.log("Benvenuto, Sommo Poeta.");
     }
+
+    // 2. Togliamo la vecchia "card-smarrito" fissa
+    if(cardGen) cardGen.style.display = 'none';
+
+    // 3. Creiamo il bottone "Nuovo Personaggio"
+    let htmlSchede = `
+      <div class="scheda-card" style="border-style: dashed; justify-content: center; align-items: center; cursor: pointer;" onclick="creaNuovaScheda()">
+        <h2 class="card-name" style="color: var(--g);">+ Nuovo Personaggio</h2>
+        <p class="card-desc" style="text-align: center;">Crea una nuova scheda vuota</p>
+      </div>
+    `;
+
+    // 4. Interroghiamo Firestore per cercare le schede di questo utente
+    try {
+      const q = query(collection(db, "schede"), where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      
+      querySnapshot.forEach((doc) => {
+        // Saltiamo Bartolomeo se l'abbiamo già gestito sopra
+        if (doc.id.includes('_bartolomeo')) return; 
+
+        const datiDb = doc.data();
+        let nomeChar = datiDb.nome || 'Smarrito Senza Nome';
+        let idUrl = doc.id.replace(user.uid + '_', ''); // Estraiamo solo l'ID (es. sheet_123)
+
+        // Creiamo la card per ogni personaggio trovato
+        htmlSchede += `
+          <a class="scheda-card" href="Inferno_Scheda_Generica.html?id=${idUrl}">
+            <span class="card-num">Scheda Salvata</span>
+            <h2 class="card-name">${nomeChar}</h2>
+            <div class="card-cta">Apri scheda</div>
+          </a>
+        `;
+      });
+      
+      // Inseriamo tutto nella griglia (mantenendo Bartolomeo se presente)
+      container.innerHTML = (user.email === "rickbaldi25@gmail.com" ? cardBart.outerHTML : '') + htmlSchede;
+
+    } catch(err) {
+      console.error("Errore nel caricamento delle schede:", err);
+    }
+
   } else {
-    // Nessuno è loggato
+    // Utente offline: ripristina lo stato base
     btnLogin.style.display = 'inline-block';
     btnLogout.style.display = 'none';
-    cardBart.style.display = 'none';
-    cardGen.style.display = 'none';
+    container.innerHTML = ''; // Nascondi le schede
   }
 });
 </script>
