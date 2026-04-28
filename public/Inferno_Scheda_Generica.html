@@ -192,6 +192,23 @@
 
     <div class="res-block">
       <div class="res-head">
+        <span class="res-name">☩ Tiri Salvezza Morte</span>
+        <button class="tsm-reset" onclick="resetTsm()">↺ reset</button>
+      </div>
+      <div class="res-body">
+        <div class="tsm-row">
+          <span class="tsm-lbl">Successi</span>
+          <div class="tsm-dots" id="tsm-s"></div>
+        </div>
+        <div class="tsm-row">
+          <span class="tsm-lbl">Fallimenti</span>
+          <div class="tsm-dots" id="tsm-f"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head">
         <span class="res-name">🎲 Risorse</span>
         <button class="add-btn" onclick="addRes()">+ risorsa</button>
       </div>
@@ -238,6 +255,7 @@ var D = {
   car:[{n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},{n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}],
   ts:[{n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},{n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}],
   ab:[{n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},{n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},{n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},{n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},{n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},{n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},{n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},{n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}],
+  tsm:{s:0,f:0},
   em:[],atk:[],pv:[],res:[],
   spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
   slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}

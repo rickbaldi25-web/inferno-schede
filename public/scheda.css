@@ -144,11 +144,11 @@ input[type="color"] { width: 20px; height: 20px; border: none; border-radius: 3p
 .vv-area::placeholder, .note-area::placeholder, .cronache-area::placeholder { color: var(--ink3); font-style: italic; }
 
 /* ── MAGIE E INCANTESIMI (Generica) ── */
-.spell-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+.spell-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .spell-level { background: var(--s2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color .2s; }
-.sl-head { padding: 6px 10px; background: rgba(139,0,0,0.15); display: flex; align-items: center; justify-content: space-between; }
+.sl-head { padding: 8px 10px; background: rgba(139,0,0,0.15); display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--borderl); }
 .sl-lbl { font-family: 'Cormorant SC', serif; font-size: 11px; color: var(--g); letter-spacing: 1px; }
-.sl-slots { display: flex; align-items: center; gap: 4px; }
+.sl-slots { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .sl-slot-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--g); cursor: pointer; transition: all .15s; flex-shrink: 0; }
 .sl-slot-dot.used { background: var(--g); }
 .sl-slot-count { font-size: 10px; color: var(--ink3); }
@@ -217,6 +217,16 @@ input[type="color"] { width: 20px; height: 20px; border: none; border-radius: 3p
 .sdot.on { background: var(--gl); border-color: var(--gl); }
 .sdot.w { border-color: rgba(255,100,100,0.5); }
 .sdot.on.w { background: #e03030; border-color: #ff5050; }
+
+/* ── TIRI SALVEZZA MORTE ── */
+.tsm-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+.tsm-lbl { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--ink3); width: 70px; flex-shrink: 0; }
+.tsm-dots { display: flex; gap: 7px; }
+.tsm-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--ink3); cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.tsm-dot.on-s { background: var(--g); border-color: var(--gl); box-shadow: 0 0 6px rgba(160,120,32,0.4); }
+.tsm-dot.on-f { background: var(--r); border-color: var(--rl); box-shadow: 0 0 6px rgba(139,0,0,0.4); }
+.tsm-reset { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; background: transparent; border: none; color: var(--ink3); cursor: pointer; padding: 4px 0 0; transition: color .2s; }
+.tsm-reset:hover { color: var(--ink2); }
 
 .res-block { background: var(--s1); border: 1px solid var(--border); border-radius: var(--radiusl); overflow: hidden; }
 .res-head { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }

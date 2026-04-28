@@ -270,6 +270,24 @@
       </div>
     </div>
 
+    <!-- TIRI SALVEZZA MORTE -->
+    <div class="res-block">
+      <div class="res-head">
+        <span class="res-name">☩ Tiri Salvezza Morte</span>
+        <button class="tsm-reset" onclick="resetTsm()">↺ reset</button>
+      </div>
+      <div class="res-body">
+        <div class="tsm-row">
+          <span class="tsm-lbl">Successi</span>
+          <div class="tsm-dots" id="tsm-s"></div>
+        </div>
+        <div class="tsm-row">
+          <span class="tsm-lbl">Fallimenti</span>
+          <div class="tsm-dots" id="tsm-f"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- PRIVILEGI -->
 
 <div class="mob-section">
@@ -321,7 +339,7 @@ var D={
   vir:"Determinazione — coltiva coraggio e forza d'animo",
   viz:'Indolenza — non si oppone alle ingiustizie, non aiuta i bisognosi',
   cr:"Ex soldato che obbediva ciecamente agli ordini, anche i più crudeli. Ha lasciato che i deboli subissero senza schierarsi. Ora è arrabbiato con sé stesso e cerca redenzione attraverso il Viaggio all'Inferno.",
-  nt:'',spe:33,ki:0,kiMax:2,di:false,scPf:22,scOn:false,
+  nt:'',spe:33,ki:0,kiMax:2,di:false,scPf:22,scOn:false,tsm:{s:0,f:0},
   kiAb:[
     {costo:'1 Ki', desc:'Tempesta di Colpi — 2 attacchi disarmati come azione bonus'},
     {costo:'1 Ki', desc:'Pazienza Difensiva — usa Schivata come azione bonus'},
@@ -514,8 +532,8 @@ window.applyAll = function(){
   
   if(D.theme&&D.theme!=='custom'){var b=document.querySelector('[data-t="'+D.theme+'"]'); window.setTheme(D.theme,b);}
   
-  window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpe(); window.rPriv(); window.rAll();
-  window.rKi(); window.updScBar(); 
+  window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpe(); window.rTsm(); window.rPriv(); window.rAll();
+  window.rKi(); window.updScBar();
   window.resizeAllTextareas();
 };
 

@@ -161,14 +161,17 @@ window.rSpells = () => {
             slotsHtml += '<div class="sl-slot-dot' + (s < sl.used ? ' used' : '') + '" onclick="window.toggleSlot(' + lvl + ',' + s + ')"></div>'; 
         }
         
-        box.innerHTML = '<div class="sl-head" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--borderl); margin-bottom:6px;">' +
-            '<span class="sl-lbl" style="white-space:nowrap; font-size:11px; color:var(--g); letter-spacing:1px;">Livello ' + lv + '</span>' +
-            '<div class="sl-slots" style="display:flex; align-items:center; gap:4px;">' + slotsHtml +
-                '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" title="Slot totali" ' +
-                'style="width:24px; background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); font-family:\'Cormorant SC\',serif; font-size:14px; color:var(--g); text-align:center; outline:none;" ' +
-                'onchange="if(!D.slots[' + lv + '])D.slots[' + lv + ']={tot:0,used:0};D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
-                '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')" title="Reset slot">↺</button>' +
+        box.innerHTML = '<div class="sl-head">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                '<span class="sl-lbl">Livello ' + lv + '</span>' +
+                '<div style="display:flex; align-items:center; gap:4px;">' +
+                    '<input type="number" min="0" max="9" value="' + (sl.tot || 0) + '" title="Slot totali" ' +
+                    'style="width:24px; background:transparent; border:none; border-bottom:1px solid rgba(160,120,32,0.3); font-family:\'Cormorant SC\',serif; font-size:14px; color:var(--g); text-align:center; outline:none;" ' +
+                    'onchange="if(!D.slots[' + lv + '])D.slots[' + lv + ']={tot:0,used:0};D.slots[' + lv + '].tot=parseInt(this.value)||0;window.rSpells()">' +
+                    '<button style="background:rgba(139,0,0,0.1); border:1px solid rgba(139,0,0,0.2); color:#e06060; border-radius:3px; padding:2px 5px; cursor:pointer; font-size:9px;" onclick="window.resetSlots(' + lv + ')" title="Reset slot">↺</button>' +
+                '</div>' +
             '</div>' +
+            (slotsHtml ? '<div class="sl-slots">' + slotsHtml + '</div>' : '') +
         '</div>' +
         '<div class="sl-body" id="sp-' + lv + '"></div>' +
         '<div style="padding:4px 0;"><button class="add-btn" onclick="window.addSpell(' + lv + ')">+ incantesimo</button></div>';
@@ -206,6 +209,27 @@ window.rSpe = () => {
         c.appendChild(d);
     }
 };
+window.rTsm = () => {
+    var cs = document.getElementById('tsm-s');
+    var cf = document.getElementById('tsm-f');
+    if (!cs || !cf) return;
+    if (!D.tsm) D.tsm = { s: 0, f: 0 };
+    cs.innerHTML = ''; cf.innerHTML = '';
+    for (var i = 0; i < 3; i++) {
+        (function(idx) {
+            var ds = document.createElement('div');
+            ds.className = 'tsm-dot' + (idx < D.tsm.s ? ' on-s' : '');
+            ds.onclick = function() { D.tsm.s = (D.tsm.s === idx + 1) ? idx : idx + 1; window.rTsm(); };
+            cs.appendChild(ds);
+            var df = document.createElement('div');
+            df.className = 'tsm-dot' + (idx < D.tsm.f ? ' on-f' : '');
+            df.onclick = function() { D.tsm.f = (D.tsm.f === idx + 1) ? idx : idx + 1; window.rTsm(); };
+            cf.appendChild(df);
+        })(i);
+    }
+};
+window.resetTsm = () => { if (D.tsm) { D.tsm.s = 0; D.tsm.f = 0; } window.rTsm(); };
+
 window.rRes = () => {
     var c = document.getElementById('res-list'); if (!c) return; c.innerHTML = '';
     (D.res || []).forEach(function (r, i) {
@@ -304,7 +328,7 @@ window.applyAll = () => {
     document.getElementById('sp-car').value = D.spCar || ''; document.getElementById('sp-cd').value = D.spCd || ''; document.getElementById('sp-bon').value = D.spBon || '';
     if (D.theme && D.theme !== 'custom') { var b = document.querySelector('[data-t="' + D.theme + '"]'); window.setTheme(D.theme, b); }
     
-    window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpells(); window.rSpe(); window.rRes(); window.rPriv(); window.rAll();
+    window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpells(); window.rSpe(); window.rTsm(); window.rRes(); window.rPriv(); window.rAll();
     window.resizeAllTextareas(); // Chiamata magica che adatta tutto in altezza appena si apre la scheda
 };
 
