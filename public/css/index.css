@@ -194,6 +194,17 @@ body::before {
 .scheda-card:hover .card-cta { gap:14px; }
 .scheda-card:hover .card-cta::after { transform:translateX(4px); }
 
+/* ── PANNELLO TRAGHETTATORE ── */
+.card-traghettatore {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  padding: 28px 36px;
+  gap: 0;
+}
+.traghettatore-left { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.card-traghettatore .card-cta { margin-top: 0; }
+
 /* QUOTE */
 .quote-section {
   position:relative;z-index:1;

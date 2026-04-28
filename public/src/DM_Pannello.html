@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/media/inferno-favicon.svg">
+<link rel="manifest" href="/manifest.json">
+<title>Inferno — Pannello Traghettatore</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+SC:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/dm-pannello.css">
+</head>
+<body class="t-ember">
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <span class="toolbar-brand" title="Traghettatore">Inferno</span>
+  <span class="toolbar-badge">Traghettatore</span>
+  <div class="tb-sep"></div>
+  <div class="theme-dots">
+    <div class="tdot on" data-t="ember" title="Ember" onclick="setTheme('ember',this)"></div>
+    <div class="tdot"    data-t="abyss"  title="Abyss"  onclick="setTheme('abyss',this)"></div>
+    <div class="tdot"    data-t="ash"    title="Ash"    onclick="setTheme('ash',this)"></div>
+    <div class="tdot"    data-t="venom"  title="Venom"  onclick="setTheme('venom',this)"></div>
+    <div class="tdot"    data-t="light"  title="Light"  onclick="setTheme('light',this)"></div>
+  </div>
+  <div class="tb-spacer"></div>
+  <button class="tb-btn" onclick="exportJSON()">&#8595; Esporta</button>
+  <button class="tb-btn" onclick="document.getElementById('f-import').click()">&#8593; Importa</button>
+  <input type="file" id="f-import" accept=".json" style="display:none" onchange="importJSON(event)">
+  <a class="tb-btn" href="/">&#8592; Home</a>
+  <button class="tb-btn primary" onclick="dmSalva()">Salva</button>
+  <span class="save-msg" id="sv-msg"></span>
+</div>
+
+<!-- HERO -->
+<div class="dm-hero">
+  <div class="dm-hero-inner">
+    <div>
+      <div class="dm-hero-title">Pannello Traghettatore</div>
+      <div class="dm-hero-sub">Dante's Guide to Hell &middot; Sessione</div>
+    </div>
+    <div class="dm-hero-right">
+      <div class="round-group">
+        <span class="round-lbl">Round</span>
+        <div class="round-ctrl">
+          <button class="round-btn" onclick="changeRound(-1)">&#8722;</button>
+          <span class="round-num" id="round-num">1</span>
+          <button class="round-btn" onclick="changeRound(1)">+</button>
+        </div>
+      </div>
+      <div class="tension-group">
+        <span class="tension-lbl">Tensione</span>
+        <div class="tension-track" id="tension-track"></div>
+        <span class="tension-val" id="tension-val">0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="dm-main">
+
+  <!-- COL 1: COMBATTIMENTO + PNG -->
+  <div>
+    <div class="dm-section">
+      <div class="sec-head">
+        <div class="sec-head-left"><span>&#9876; Tracker Iniziativa</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="add-btn" onclick="addCombattente()">+ aggiungi</button>
+          <button class="next-turn-btn" onclick="nextTurn()">Turno &#8594;</button>
+        </div>
+      </div>
+      <div class="dm-card">
+        <table class="init-table">
+          <thead><tr>
+            <th style="width:28px"></th>
+            <th style="width:34px">Init</th>
+            <th>Nome</th>
+            <th style="width:130px">PF</th>
+            <th>Condizioni</th>
+            <th style="width:24px"></th>
+          </tr></thead>
+          <tbody id="init-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dm-section">
+      <div class="sec-head">
+        <span>&#128100; PNG &amp; Personaggi</span>
+        <button class="add-btn" onclick="addPng()">+ aggiungi</button>
+      </div>
+      <div id="png-list"></div>
+    </div>
+  </div>
+
+  <!-- COL 2: CERCHI + ANIME -->
+  <div>
+    <div class="dm-section">
+      <div class="sec-head"><span>&#128293; I Nove Cerchi</span></div>
+      <div id="cerchi-list"></div>
+    </div>
+
+    <div class="dm-section">
+      <div class="sec-head">
+        <span>&#128128; Anime Incontrate</span>
+        <button class="add-btn" onclick="addAnima()">+ aggiungi</button>
+      </div>
+      <div id="anime-list"></div>
+    </div>
+  </div>
+
+  <!-- COL 3: XP + INVENTARIO + BM + NOTE -->
+  <div>
+    <div class="dm-section">
+      <div class="xp-card">
+        <div class="xp-title">&#10022; Esperienza &#10022;</div>
+        <div class="xp-nums">
+          <input type="number" class="xp-cur-in" id="xp-cur" value="300" min="0"
+            oninput="DM.xpCur=parseInt(this.value)||0;rXP()">
+          <span class="xp-sep">/</span>
+          <span class="xp-nxt" id="xp-nxt">900</span>
+        </div>
+        <div class="xp-bar-track"><div class="xp-bar-fill" id="xp-bar-fill" style="width:33%"></div></div>
+        <div class="xp-lvl-lbl" id="xp-lvl-lbl">Livello 2 &mdash; Monaco</div>
+      </div>
+
+      <div class="sec-head" style="margin-top:14px">
+        <span>Milestone</span>
+        <button class="add-btn" onclick="addMilestone()">+</button>
+      </div>
+      <div id="ms-list"></div>
+
+      <div class="sec-head" style="margin-top:14px">
+        <span>Log XP</span>
+        <button class="add-btn" onclick="addXpLog()">+ XP</button>
+      </div>
+      <div id="xp-log-list"></div>
+    </div>
+
+    <div class="dm-section">
+      <div class="sec-head">
+        <span>&#127912; Inventario &amp; Tesoro</span>
+        <button class="add-btn" onclick="addInv()">+ aggiungi</button>
+      </div>
+      <div id="inv-list"></div>
+    </div>
+
+    <div class="dm-section">
+      <div class="sec-head">
+        <span>&#10024; Benedizioni &amp; Maledizioni</span>
+        <div style="display:flex;gap:4px">
+          <button class="add-btn" onclick="addBM('b')">+ ben.</button>
+          <button class="add-btn" onclick="addBM('m')">+ mal.</button>
+        </div>
+      </div>
+      <div id="bm-list"></div>
+    </div>
+
+    <div class="dm-section">
+      <div class="sec-head"><span>&#128220; Note Private</span></div>
+      <div class="tag-row">
+        <span class="note-tag t-png"     onclick="insertTag('[PNG]')">PNG</span>
+        <span class="note-tag t-luogo"   onclick="insertTag('[Luogo]')">Luogo</span>
+        <span class="note-tag t-mistero" onclick="insertTag('[Mistero]')">Mistero</span>
+      </div>
+      <textarea class="note-area" id="note-priv" rows="6"
+        placeholder="Note segrete, trame nascoste, segreti dei PNG..."
+        oninput="DM.note=this.value"></textarea>
+    </div>
+  </div>
+
+</div><!-- end dm-main -->
+
+<div class="dm-footer">
+  <span class="dm-footer-text">Inferno &mdash; Dante's Guide to Hell &middot; Pannello Traghettatore v1.0</span>
+</div>
+
+<script>
+  // Genera i pip della tensione prima del modulo
+  (function() {
+    var track = document.getElementById('tension-track');
+    if (!track) return;
+    for (var i = 1; i <= 10; i++) {
+      var pip = document.createElement('div');
+      pip.className = 'tension-pip';
+      pip.title = i + '/10';
+      pip.dataset.v = i;
+      pip.onclick = (function(v){ return function(){ if(window.setTension) window.setTension(v); }; })(i);
+      track.appendChild(pip);
+    }
+  })();
+</script>
+
+<script type="module" src="/js/dm-pannello.js"></script>
+</body>
+</html>

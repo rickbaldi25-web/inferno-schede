@@ -129,7 +129,6 @@ onAuthStateChanged(auth, async (user) => {
     btnNuovo.innerHTML = '<h2 class="card-name" style="color: var(--g);">+ Nuovo</h2>';
     btnNuovo.onclick = window.creaNuovaScheda;
     container.appendChild(btnNuovo);
-
     if (user.email === "rickbaldi25@gmail.com") {
       const cardBart = document.createElement('a');
       cardBart.className = 'scheda-card';
@@ -169,8 +168,21 @@ cardBart.href = '/src/Bartolomeo_Scheda';
     } catch (err) {
       console.error("Errore caricamento schede:", err);
     } finally {
-      isRendering = false; 
+      isRendering = false;
     }
+
+    // ── PANNELLO TRAGHETTATORE — sempre ultimo, larghezza piena ──
+    const cardDm = document.createElement('a');
+    cardDm.className = 'scheda-card card-traghettatore';
+    cardDm.href = '/src/DM_Pannello';
+    cardDm.innerHTML = `
+      <div class="traghettatore-left">
+        <span class="card-num">Sessione</span>
+        <h2 class="card-name">Pannello Traghettatore</h2>
+      </div>
+      <div class="card-cta">Apri Sessione</div>
+    `;
+    container.appendChild(cardDm);
 
   } else {
     if(btnLogin) btnLogin.style.display = 'inline-block';
