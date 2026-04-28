@@ -80,7 +80,7 @@ if (audio && musicBtn) {
 // --- 4. FUNZIONI SCHEDA ---
 window.creaNuovaScheda = function() {
   const nuovoId = 'sheet_' + Date.now();
-  window.location.href = `/Inferno_Scheda_Generica?id=${nuovoId}`;
+  window.location.href = `/src/Inferno_Scheda_Generica?id=${nuovoId}`;
 }; 
 
 window.cancellaScheda = async function(idDocumento, event) {
@@ -133,7 +133,7 @@ onAuthStateChanged(auth, async (user) => {
     if (user.email === "rickbaldi25@gmail.com") {
       const cardBart = document.createElement('a');
       cardBart.className = 'scheda-card';
-cardBart.href = '/Bartolomeo_Scheda';
+cardBart.href = '/src/Bartolomeo_Scheda';
       cardBart.innerHTML = `
         <span class="card-num">Scheda 01</span>
         <h2 class="card-name">Bartolomeo</h2> 
@@ -153,7 +153,7 @@ cardBart.href = '/Bartolomeo_Scheda';
         renderedIds.add(docSnap.id);
         const info = docSnap.data();
         const idScheda = docSnap.id.substring(user.uid.length + 1);
-        const link = `/Inferno_Scheda_Generica?id=${idScheda}`;
+        const link = `/src/Inferno_Scheda_Generica?id=${idScheda}`;
         const card = document.createElement('a');
         card.className = 'scheda-card';
         card.href = link;

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="512" height="512">
+  <!-- Sfondo -->
+  <rect x="0" y="0" width="300" height="300" rx="64" fill="#0d0b09"/>
+  <rect x="0" y="0" width="300" height="300" rx="64" fill="none" stroke="#6a4a08" stroke-width="1.5"/>
+  <!-- 9 cerchi concentrici centrati -->
+  <circle cx="150" cy="164" r="138" fill="none" stroke="#1e0d02" stroke-width="1.2"/>
+  <circle cx="150" cy="164" r="120" fill="none" stroke="#2a1204" stroke-width="1.1"/>
+  <circle cx="150" cy="164" r="102" fill="none" stroke="#3a1a06" stroke-width="1"/>
+  <circle cx="150" cy="164" r="84"  fill="none" stroke="#4e2208" stroke-width="1"/>
+  <circle cx="150" cy="164" r="67"  fill="none" stroke="#622a0a" stroke-width="1.1"/>
+  <circle cx="150" cy="164" r="51"  fill="none" stroke="#7a340c" stroke-width="1.1"/>
+  <circle cx="150" cy="164" r="37"  fill="none" stroke="#8B3c10" stroke-width="1.2"/>
+  <circle cx="150" cy="164" r="24"  fill="none" stroke="#A07820" stroke-width="1.5"/>
+  <!-- Fiamme -->
+  <path d="M116 80 C111 100 102 110 105 127 C96 112 93 94 98 79 C87 101 86 121 94 138 C82 123 81 102 87 85 C75 108 77 132 86 149 C95 134 104 114 116 80Z" fill="#4a1800" opacity="0.65"/>
+  <path d="M184 80 C189 100 198 110 195 127 C204 112 207 94 202 79 C213 101 214 121 206 138 C218 123 219 102 213 85 C225 108 223 132 214 149 C205 134 196 114 184 80Z" fill="#4a1800" opacity="0.65"/>
+  <path d="M128 58 C124 78 116 88 118 103 C110 90 108 75 112 58 C103 78 102 97 108 112 C99 99 98 82 103 67 C94 87 96 108 103 123 C113 108 121 86 128 58Z" fill="#6e2200" opacity="0.8"/>
+  <path d="M172 58 C176 78 184 88 182 103 C190 90 192 75 188 58 C197 78 198 97 192 112 C201 99 202 82 197 67 C206 87 204 108 197 123 C187 108 179 86 172 58Z" fill="#6e2200" opacity="0.8"/>
+  <path d="M140 36 C137 55 130 64 132 79 C124 66 122 51 126 36 C118 55 117 74 122 89 C113 77 113 59 118 44 C109 64 111 87 119 102 C128 87 135 65 140 36Z" fill="#8B2800" opacity="0.85"/>
+  <path d="M160 36 C163 55 170 64 168 79 C176 66 178 51 174 36 C182 55 183 74 177 89 C186 77 187 59 182 44 C191 64 189 87 181 102 C171 87 163 65 160 36Z" fill="#8B2800" opacity="0.85"/>
+  <path d="M150 8 C146 31 136 42 138 59 C129 44 127 27 131 8 C121 33 120 55 127 72 C117 58 116 37 122 19 C110 43 111 69 120 86 C129 71 135 51 150 8Z" fill="#8B2200" opacity="0.9"/>
+  <path d="M150 8 C147 29 140 39 142 53 C135 41 133 25 137 8 C129 31 128 52 133 67 C125 54 124 35 129 19 C120 41 122 65 130 80 C139 64 145 42 150 8Z" fill="#A04010" opacity="0.95"/>
+  <path d="M150 8 C148 27 144 36 146 48 C141 37 140 25 143 11 C137 30 137 48 141 62 C136 50 136 34 139 21 C133 38 135 58 141 71 C146 58 149 36 150 8Z" fill="#A07820"/>
+  <path d="M150 8 C149 23 147 31 148 40 C146 32 145 23 147 12 C144 26 144 39 147 49 C149 38 150 24 150 8Z" fill="#c8a030"/>
+  <!-- Corno sinistro -->
+  <path d="M135 156 C128 150 118 141 114 129 C112 120 115 112 120 108 C118 116 118 124 122 132 C126 140 132 148 136 156Z" fill="#3a2008"/>
+  <path d="M135 156 C129 151 120 143 116 132 C114 123 117 115 121 111 C119 118 119 126 123 134 C127 142 132 149 136 156Z" fill="#6a3a10"/>
+  <path d="M135 156 C130 152 123 145 119 135 C118 127 120 120 124 116 C122 122 123 129 126 136 C129 143 133 150 136 156Z" fill="#8B5020" opacity="0.6"/>
+  <!-- Corno destro -->
+  <path d="M165 156 C172 150 182 141 186 129 C188 120 185 112 180 108 C182 116 182 124 178 132 C174 140 168 148 164 156Z" fill="#3a2008"/>
+  <path d="M165 156 C171 151 180 143 184 132 C186 123 183 115 179 111 C181 118 181 126 177 134 C173 142 168 149 164 156Z" fill="#6a3a10"/>
+  <path d="M165 156 C170 152 177 145 181 135 C182 127 180 120 176 116 C178 122 177 129 174 136 C171 143 167 150 164 156Z" fill="#8B5020" opacity="0.6"/>
+  <!-- Cranio -->
+  <ellipse cx="150" cy="170" rx="20" ry="22" fill="#111008"/>
+  <ellipse cx="150" cy="170" rx="20" ry="22" fill="none" stroke="#5a3010" stroke-width="0.8"/>
+  <!-- Muso -->
+  <ellipse cx="150" cy="181" rx="11" ry="9" fill="#0e0c07"/>
+  <!-- Occhio sinistro -->
+  <ellipse cx="142" cy="168" rx="5" ry="4.5" fill="#0a0604"/>
+  <ellipse cx="142" cy="168" rx="3.5" ry="3.5" fill="#8B0000"/>
+  <ellipse cx="142" cy="168" rx="1.1" ry="3.1" fill="#050302"/>
+  <ellipse cx="142" cy="168" rx="3.1" ry="1.3" fill="#cc2200" opacity="0.5"/>
+  <circle cx="141" cy="166.5" r="0.8" fill="#ff6600" opacity="0.8"/>
+  <!-- Occhio destro -->
+  <ellipse cx="158" cy="168" rx="5" ry="4.5" fill="#0a0604"/>
+  <ellipse cx="158" cy="168" rx="3.5" ry="3.5" fill="#8B0000"/>
+  <ellipse cx="158" cy="168" rx="1.1" ry="3.1" fill="#050302"/>
+  <ellipse cx="158" cy="168" rx="3.1" ry="1.3" fill="#cc2200" opacity="0.5"/>
+  <circle cx="157" cy="166.5" r="0.8" fill="#ff6600" opacity="0.8"/>
+  <!-- Barbetta -->
+  <path d="M146 186 Q150 194 154 186" fill="none" stroke="#3a2008" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M150 188 Q150 198 150 202" fill="none" stroke="#2e1a06" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
