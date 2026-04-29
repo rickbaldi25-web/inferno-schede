@@ -146,24 +146,22 @@ onAuthStateChanged(auth, async (user) => {
     cardNew.innerHTML = `<div class="card-new-icon">+</div><div class="card-new-label">Nuovo Smarrito</div>`;
     grid.appendChild(cardNew);
 
-    /* ── Scheda Bartolomeo (hardcoded) ─────────── */
-    if (user.email === 'rickbaldi25@gmail.com') {
-      grid.appendChild(buildCard({
-        href:     '/src/Bartolomeo_Scheda',
-        num:      'Scheda 01',
-        name:     'Bartolomeo',
-        subtitle: 'Lo Schiavo · Monaco Lv.2',
-        tags:     ['Ignavia', 'Antinferno'],
-      }));
-    }
-
-    /* ── Schede Firestore ──────────────────────── */
+    /* ── Schede Firestore + Bartolomeo ────────────── */
+    let bartPf = null, bartPfx = null;
     try {
       const q  = query(collection(db, 'schede'), where('uid', '==', user.uid));
       const qs = await getDocs(q);
       const seen = new Set();
       qs.forEach(snap => {
-        if (snap.id.includes('bartolomeo') || seen.has(snap.id)) return;
+        if (snap.id.includes('bartolomeo')) {
+          try {
+            const parsed = JSON.parse(snap.data().data || '{}');
+            bartPf  = parsed.pf  !== undefined ? parseInt(parsed.pf)  : null;
+            bartPfx = parsed.pfx !== undefined ? parseInt(parsed.pfx) : null;
+          } catch {}
+          return;
+        }
+        if (seen.has(snap.id)) return;
         seen.add(snap.id);
         const d = snap.data();
         const idScheda = snap.id.substring(user.uid.length + 1);
@@ -179,6 +177,19 @@ onAuthStateChanged(auth, async (user) => {
       });
     } catch (e) { console.error(e); }
     finally { isRendering = false; }
+
+    /* ── Scheda Bartolomeo (hardcoded con HP live) ── */
+    if (user.email === 'rickbaldi25@gmail.com') {
+      grid.insertBefore(buildCard({
+        href:     '/src/Bartolomeo_Scheda',
+        num:      'Scheda 01',
+        name:     'Bartolomeo',
+        subtitle: 'Lo Schiavo · Monaco Lv.2',
+        tags:     ['Ignavia', 'Antinferno'],
+        pfCur:    bartPf,
+        pfMax:    bartPfx,
+      }), grid.children[1] ?? null);
+    }
 
     /* ── Pannello DM ───────────────────────────── */
     const cardDm = document.createElement('a');

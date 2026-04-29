@@ -30,54 +30,22 @@ const LOCAL_KEY = 'inferno_dm_sessione';
 window.DM = {
   theme: 'ember',
   round: 1,
-  tension: 3,
+  tension: 0,
   currentTurn: 0,
   cerchioAttuale: 'antinferno',
   _savedAt: '',
 
-  combattenti: [
-    { id: 1, init: 22, nome: 'Bartolomeo', pfCur: 26, pfMax: 26, stati: [], tipo: 'pg' },
-    { id: 2, init: 15, nome: 'Demonio Custode', pfCur: 35, pfMax: 35, stati: [], tipo: 'nemico' },
-    { id: 3, init: 8,  nome: 'Sciame Vespe',   pfCur: 22, pfMax: 22, stati: [], tipo: 'alleato' }
-  ],
+  combattenti: [],
+  png: [],
+  anime: [],
 
-  png: [
-    { id: 1, nome: 'Caronte', ruolo: 'Traghettatore', hp: '∞', rel: 'ostile', note: 'Richiede obolo — può essere corrotto con anime rare' },
-    { id: 2, nome: 'Anima Senza Nome', ruolo: 'Ignavo, ex mercante', hp: '—', rel: 'neutrale', note: 'Conosce un passaggio per il II cerchio' }
-  ],
-
-  anime: [
-    { id: 1, nome: 'Fra Alberigo', peccato: 'Tradimento dei familiari', esito: 'ricompensa', note: 'Ha rivelato la posizione della porta' },
-    { id: 2, nome: 'Ignota', peccato: 'Ignavia', esito: 'punizione', note: 'Inseguita dalle vespe' }
-  ],
-
-  xpCur: 900,
+  xpCur: 0,
   xpLivelli: [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000],
 
-  milestones: [
-    { done: true,  txt: "Attraversare l'Antinferno" },
-    { done: false, txt: 'Giungere al II Cerchio' },
-    { done: false, txt: 'Ottenere la fiducia di Virgilio' },
-    { done: false, txt: 'Raggiungere il VI Cerchio' }
-  ],
-
-  xpLog: [
-    { v: 300, desc: 'Incontro con Caronte — superato' },
-    { v: 550, desc: 'Completamento I Cerchio' },
-    { v: 50,  desc: 'Bonus narrativo: scelta morale' }
-  ],
-
-  inventario: [
-    { nome: 'Catene Infernali (Emblema)', qty: '1', tag: 'obj' },
-    { nome: 'Obolo di Caronte', qty: '3', tag: 'tesoro' },
-    { nome: 'Erbe Medicinali', qty: '2', tag: 'obj' }
-  ],
-
-  bm: [
-    { tipo: 'b', nome: 'Benedizione del Viandante', dur: '∞' },
-    { tipo: 'm', nome: "Marchio dell'Ignavia",      dur: '∞' },
-    { tipo: 'b', nome: 'Scurovisione (I cerchio)',  dur: '—' }
-  ],
+  milestones: [],
+  xpLog: [],
+  inventario: [],
+  bm: [],
 
   note: ''
 };
