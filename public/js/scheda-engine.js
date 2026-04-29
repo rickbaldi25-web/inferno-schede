@@ -328,8 +328,8 @@ window.applyAll = () => {
     document.getElementById('sp-car').value = D.spCar || ''; document.getElementById('sp-cd').value = D.spCd || ''; document.getElementById('sp-bon').value = D.spBon || '';
     if (D.theme && D.theme !== 'custom') { var b = document.querySelector('[data-t="' + D.theme + '"]'); window.setTheme(D.theme, b); }
     
-    window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpells(); window.rSpe(); window.rTsm(); window.rRes(); window.rPriv(); window.rAll();
-    window.resizeAllTextareas(); // Chiamata magica che adatta tutto in altezza appena si apre la scheda
+    window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpells(); window.rSpe(); window.rTsm(); window.rRes(); window.rPriv(); window.rVitaDivina(); window.rExh(); window.rAll();
+    window.resizeAllTextareas();
 };
 
 // --- SPECIAL FEATURES ---
@@ -350,6 +350,53 @@ window.esportaPDF = () => {
     document.querySelector('.toolbar').style.display = 'none';
     html2pdf().set({ margin: [10, 0, 10, 0], filename: (D.nome || 'Smarrito') + '.pdf', jsPDF: { unit: 'mm', format: 'a4' } })
         .from(document.body).save().then(() => { document.querySelector('.toolbar').style.display = 'flex'; btn.innerHTML = old; });
+};
+
+// --- VITA DIVINA ---
+window.rVitaDivina = () => {
+    var c = document.getElementById('vd-lives'); if (!c) return;
+    if (D.vitaDivina === undefined) D.vitaDivina = 3;
+    var v = D.vitaDivina;
+    c.innerHTML = '';
+    [0, 1, 2].forEach(function(i) {
+        var h = document.createElement('div');
+        h.className = 'vd-heart' + (i < v ? ' on' : '');
+        h.textContent = '♥';
+        h.onclick = function() { D.vitaDivina = (D.vitaDivina === i + 1) ? i : i + 1; window.rVitaDivina(); };
+        c.appendChild(h);
+    });
+};
+
+// --- HP BAR PF ATTUALI ---
+window.updPfBar = () => {
+    var cur = parseInt((document.getElementById('f-pf') || {}).value) || 0;
+    var max = parseInt((document.getElementById('f-pfx') || {}).value) || 0;
+    var fill = document.getElementById('pf-bar-fill'); if (!fill) return;
+    var pct = max > 0 ? Math.max(0, Math.min(100, (cur / max) * 100)) : 0;
+    fill.style.width = pct + '%';
+    fill.style.background = pct <= 25 ? 'var(--r)' : pct <= 50 ? '#b06820' : 'var(--g)';
+};
+
+// --- LIVELLI INDEBOLIMENTO ---
+const EXH_LEVELS = [
+    'Svantaggio alle prove di caratteristica',
+    'Velocità dimezzata',
+    'Svantaggio ad attacchi e tiri salvezza',
+    'Massimo PF dimezzato',
+    'Velocità 0',
+    'Morte'
+];
+window.rExh = () => {
+    var c = document.getElementById('exh-col'); if (!c) return; c.innerHTML = '';
+    var cur = D.exhaustion || 0;
+    EXH_LEVELS.forEach(function(desc, i) {
+        var lvl = i + 1;
+        var row = document.createElement('div');
+        row.className = 'exh-row' + (lvl === cur ? ' active' : lvl < cur ? ' past' : '');
+        row.innerHTML = '<div class="exh-num">' + lvl + '</div><div class="exh-desc">' + desc + '</div>';
+        row.onclick = function() { D.exhaustion = (D.exhaustion === lvl) ? 0 : lvl; window.rExh(); };
+        c.appendChild(row);
+    });
 };
 
 window.caricaAvatar = (e) => {

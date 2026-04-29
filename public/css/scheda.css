@@ -109,6 +109,7 @@ input[type="color"] { width: 20px; height: 20px; border: none; border-radius: 3p
 
 /* ── ABILITÀ E SKILLS ── */
 .skills-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ab-2col { display: grid; grid-template-columns: 1fr 1fr; column-gap: 6px; }
 .skill-row { display: flex; align-items: center; gap: 8px; padding: 5px 4px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .1s; border-radius: 3px; }
 .skill-row:last-child { border-bottom: none; }
 .pdot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink3); cursor: pointer; flex-shrink: 0; transition: all .15s; }
@@ -527,10 +528,67 @@ body.master-view .ki-max-input {
 /* Blocca tutti i pallini cliccabili (Speranza, Ki, Ispirazione, Preparazione) */
 body.master-view .pdot, 
 body.master-view .sdot, 
-body.master-view .ki-dot, 
-body.master-view .sl-slot-dot, 
-body.master-view .spell-prep, 
+body.master-view .ki-dot,
+body.master-view .sl-slot-dot,
+body.master-view .spell-prep,
 body.master-view .di-dot,
-body.master-view .avatar-box { 
-  pointer-events: none !important; 
+body.master-view .avatar-box {
+  pointer-events: none !important;
 }
+
+/* ── VITA DIVINA ── */
+.vd-card {
+  background: linear-gradient(135deg, rgba(6,12,24,0.9) 0%, rgba(10,18,38,0.95) 100%);
+  border: 1px solid rgba(80,120,200,0.3);
+  border-radius: var(--radiusl);
+  padding: 16px;
+  text-align: center;
+}
+.vd-title {
+  font-family: 'Cormorant SC', serif;
+  font-size: 11px; letter-spacing: 3px;
+  color: #8ab4f8; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.vd-lives { display: flex; justify-content: center; gap: 14px; }
+.vd-heart {
+  font-size: 30px; cursor: pointer;
+  transition: transform .2s, filter .2s;
+  filter: grayscale(1) opacity(0.25);
+  user-select: none; line-height: 1;
+}
+.vd-heart.on { filter: none drop-shadow(0 0 6px rgba(255,80,80,0.6)); transform: scale(1.08); }
+@media (hover: hover) { .vd-heart:hover { transform: scale(1.18); } }
+
+/* ── HP BAR IN VITALS ── */
+.vital-pf { gap: 3px; }
+.vital-hp-bar {
+  width: 78%; height: 4px;
+  background: var(--s3); border-radius: 2px; overflow: hidden;
+}
+.vital-hp-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--g);
+  transition: width .4s ease, background .3s;
+}
+
+/* ── LIVELLI INDEBOLIMENTO ── */
+.exh-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 5px 4px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer; border-radius: 3px; transition: background .1s;
+}
+.exh-row:last-child { border-bottom: none; }
+.exh-num {
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px; font-weight: 600; color: var(--ink3);
+  width: 16px; text-align: center; flex-shrink: 0;
+  transition: color .15s; line-height: 1.4;
+}
+.exh-desc { font-size: 11px; color: var(--ink3); flex: 1; line-height: 1.4; transition: color .15s; }
+.exh-row.past .exh-num,
+.exh-row.past .exh-desc { color: rgba(180,60,60,0.5); }
+.exh-row.active { background: rgba(139,0,0,0.1); }
+.exh-row.active .exh-num { color: var(--rl); }
+.exh-row.active .exh-desc { color: var(--ink2); font-weight: 500; }
+@media (hover: hover) { .exh-row:hover { background: var(--panelh); } }

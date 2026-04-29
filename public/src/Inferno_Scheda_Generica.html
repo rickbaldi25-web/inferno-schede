@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Scheda Smarrito</title>
@@ -70,8 +69,8 @@
 
 <div class="vitals">
   <div class="vitals-inner">
-    <div class="vital"><span class="vital-lbl">PF Max</span><input class="vital-val" id="f-pfx" placeholder="—"></div>
-    <div class="vital"><span class="vital-lbl">PF Attuali</span><input class="vital-val" id="f-pf" placeholder="—"></div>
+    <div class="vital"><span class="vital-lbl">PF Max</span><input class="vital-val" id="f-pfx" placeholder="—" oninput="updPfBar()"></div>
+    <div class="vital vital-pf"><span class="vital-lbl">PF Attuali</span><input class="vital-val" id="f-pf" placeholder="—" oninput="updPfBar()"><div class="vital-hp-bar"><div class="vital-hp-fill" id="pf-bar-fill"></div></div></div>
     <div class="vital"><span class="vital-lbl">Classe Armatura</span><input class="vital-val" id="f-ca" placeholder="—"></div>
     <div class="vital"><span class="vital-lbl">Iniziativa</span><input class="vital-val" id="f-ini" placeholder="—"></div>
     <div class="vital"><span class="vital-lbl">Velocità</span><input class="vital-val" id="f-vel" placeholder="—"></div>
@@ -80,37 +79,27 @@
 </div>
 
 <div class="main">
-  <!-- LEFT -->
+  <!-- LEFT: caratteristiche + tiri salvezza -->
   <div>
     <div class="sec-label">Caratteristiche</div>
     <div class="caract-col" id="cl"></div>
+    <div style="margin-top:16px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Tiri Salvezza</span></div>
+        <div class="card-body" id="ts-col"></div>
+      </div>
+    </div>
   </div>
 
   <!-- CENTER -->
   <div class="center-col">
 
     <div class="mob-section">
-      <div class="mob-toggle open" onclick="togMob(this)">Statistiche &amp; Abilità</div>
+      <div class="mob-toggle open" onclick="togMob(this)">Abilità</div>
       <div class="mob-content open">
-        <div class="skills-2col">
-          <div class="card">
-            <div class="card-head"><span class="card-title">Tiri Salvezza</span></div>
-            <div class="card-body" id="ts-col"></div>
-          </div>
-          <div class="card">
-            <div class="card-head"><span class="card-title">Abilità</span><button class="add-btn" onclick="addAb()">+ aggiungi</button></div>
-            <div class="card-body" id="ab-col"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mob-section">
-      <div class="mob-toggle open" onclick="togMob(this)">Virtù &amp; Vizi</div>
-      <div class="mob-content open">
-        <div class="vv-grid">
-          <div><div class="sec-label">Virtù</div><textarea class="vv-area" id="f-vir" placeholder="La virtù del personaggio..."></textarea></div>
-          <div><div class="sec-label">Vizio</div><textarea class="vv-area" id="f-viz" placeholder="Il vizio del personaggio..."></textarea></div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Abilità</span><button class="add-btn" onclick="addAb()">+ aggiungi</button></div>
+          <div class="card-body ab-2col" id="ab-col"></div>
         </div>
       </div>
     </div>
@@ -138,18 +127,29 @@
       </div>
     </div>
 
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Privilegi &amp; Tratti</div>
+      <div class="mob-content open">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Privilegi &amp; Tratti</span>
+            <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
+          </div>
+          <div class="card-body" id="pv-l"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- MAGIE -->
     <div class="mob-section">
       <div class="mob-toggle open" onclick="togMob(this)">✨ Magie &amp; Incantesimi</div>
       <div class="mob-content open">
         <div class="sec-label" style="margin-bottom:12px;">Magie &amp; Incantesimi</div>
-        <!-- Cast info -->
         <div class="spell-cast-info">
           <div class="sci-box"><div class="sci-lbl">Caratteristica</div><input class="sci-val" id="sp-car" placeholder="SAG"></div>
           <div class="sci-box"><div class="sci-lbl">CD Salvezza</div><input class="sci-val" id="sp-cd" placeholder="—"></div>
           <div class="sci-box"><div class="sci-lbl">Bonus Attacco</div><input class="sci-val" id="sp-bon" placeholder="—"></div>
         </div>
-        <!-- Cantrips -->
         <div class="card" style="margin-bottom:12px;">
           <div class="card-head">
             <span class="card-title">Trucchetti (Livello 0)</span>
@@ -157,7 +157,6 @@
           </div>
           <div class="card-body" id="sp-0"></div>
         </div>
-        <!-- Spell levels 1-9 -->
         <div class="spell-grid" id="spell-grid"></div>
       </div>
     </div>
@@ -181,6 +180,11 @@
         <input type="number" class="spe-max-in" id="f-spemax" value="33" min="1" max="99" title="Massimo Speranza" oninput="rSpe()">
       </div>
       <div class="spe-dots" id="spe-d"></div>
+    </div>
+
+    <div class="vd-card">
+      <div class="vd-title">♥ Vita Divina ♥</div>
+      <div class="vd-lives" id="vd-lives"></div>
     </div>
 
     <div class="res-block">
@@ -210,18 +214,32 @@
 
     <div class="res-block">
       <div class="res-head">
-        <span class="res-name">🎲 Risorse</span>
-        <button class="add-btn" onclick="addRes()">+ risorsa</button>
+        <span class="res-name">⚠ Indebolimento</span>
+        <button class="tsm-reset" onclick="D.exhaustion=0;window.rExh()">↺ reset</button>
       </div>
-      <div class="res-body" id="res-list"></div>
+      <div class="res-body" id="exh-col"></div>
+    </div>
+
+    <div class="res-block">
+      <div class="res-head"><span class="res-name">Virtù &amp; Vizi</span></div>
+      <div class="res-body">
+        <div style="margin-bottom:10px">
+          <div class="sec-label" style="margin-bottom:4px">Virtù</div>
+          <textarea class="vv-area" id="f-vir" placeholder="La virtù del personaggio..."></textarea>
+        </div>
+        <div>
+          <div class="sec-label" style="margin-bottom:4px">Vizio</div>
+          <textarea class="vv-area" id="f-viz" placeholder="Il vizio del personaggio..."></textarea>
+        </div>
+      </div>
     </div>
 
     <div class="res-block">
       <div class="res-head">
-        <span class="res-name">Privilegi &amp; Tratti</span>
-        <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
+        <span class="res-name">🎲 Risorse</span>
+        <button class="add-btn" onclick="addRes()">+ risorsa</button>
       </div>
-      <div class="res-body" id="pv-l"></div>
+      <div class="res-body" id="res-list"></div>
     </div>
 
     <div class="res-block">
@@ -242,9 +260,6 @@
     <button class="f-btn" onclick="copiaLinkMaster()" title="Copia link sola lettura">
       👁️ <span>Link Master</span>
     </button>
-    <button class="f-btn" id="btn-pdf" onclick="esportaPDF()" title="Esporta in PDF">
-      📄 <span>Scarica PDF</span>
-    </button>
   </div>
 </div>
 
@@ -256,7 +271,7 @@ var D = {
   car:[{n:'Forza',k:'FOR',v:10},{n:'Destrezza',k:'DES',v:10},{n:'Costituzione',k:'CON',v:10},{n:'Intelligenza',k:'INT',v:10},{n:'Saggezza',k:'SAG',v:10},{n:'Carisma',k:'CAR',v:10}],
   ts:[{n:'Forza',k:'FOR',p:false},{n:'Destrezza',k:'DES',p:false},{n:'Costituzione',k:'CON',p:false},{n:'Intelligenza',k:'INT',p:false},{n:'Saggezza',k:'SAG',p:false},{n:'Carisma',k:'CAR',p:false}],
   ab:[{n:'Acrobazia',k:'DES',p:false},{n:'Addestrare Animali',k:'SAG',p:false},{n:'Arcano',k:'INT',p:false},{n:'Atletica',k:'FOR',p:false},{n:'Furtività',k:'DES',p:false},{n:'Indagare',k:'INT',p:false},{n:'Inganno',k:'CAR',p:false},{n:'Intimidire',k:'CAR',p:false},{n:'Intuizione',k:'SAG',p:false},{n:'Medicina',k:'SAG',p:false},{n:'Natura',k:'INT',p:false},{n:'Percezione',k:'SAG',p:false},{n:'Persuasione',k:'CAR',p:false},{n:'Rapidità di Mano',k:'DES',p:false},{n:'Religione',k:'INT',p:false},{n:'Sopravvivenza',k:'SAG',p:false},{n:'Storia',k:'INT',p:false}],
-  tsm:{s:0,f:0},
+  tsm:{s:0,f:0}, vitaDivina:3, exhaustion:0,
   em:[],atk:[],pv:[],res:[],
   spells:{0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]},
   slots:{1:{tot:0,used:0},2:{tot:0,used:0},3:{tot:0,used:0},4:{tot:0,used:0},5:{tot:0,used:0},6:{tot:0,used:0},7:{tot:0,used:0},8:{tot:0,used:0},9:{tot:0,used:0}}

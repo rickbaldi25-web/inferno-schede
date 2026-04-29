@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Bartolomeo</title>
@@ -85,8 +84,8 @@
 <!-- VITALS -->
 <div class="vitals">
   <div class="vitals-inner">
-    <div class="vital"><span class="vital-lbl">PF Max</span><input class="vital-val" id="f-pfx" value="26"><span class="vital-hint"> </span></div>
-    <div class="vital"><span class="vital-lbl">PF Attuali</span><input class="vital-val" id="f-pf" value="26"></div>
+    <div class="vital"><span class="vital-lbl">PF Max</span><input class="vital-val" id="f-pfx" value="26" oninput="updPfBar()"><span class="vital-hint"> </span></div>
+    <div class="vital vital-pf"><span class="vital-lbl">PF Attuali</span><input class="vital-val" id="f-pf" value="26" oninput="updPfBar()"><div class="vital-hp-bar"><div class="vital-hp-fill" id="pf-bar-fill"></div></div></div>
     <div class="vital"><span class="vital-lbl">Classe Armatura</span><input class="vital-val" id="f-ca" value="13"><span class="vital-hint">10+DES+SAG</span></div>
     <div class="vital"><span class="vital-lbl">Iniziativa</span><input class="vital-val" id="f-ini" value="+1 ★"><span class="vital-hint">★ svantaggio</span></div>
     <div class="vital"><span class="vital-lbl">Velocità</span><input class="vital-val" id="f-vel" value="15 m"><span class="vital-hint">Piè Veloce + Monaco</span></div>
@@ -97,48 +96,31 @@
 <!-- MAIN -->
 <div class="main">
 
-  <!-- LEFT: CARATTERISTICHE -->
+  <!-- LEFT: caratteristiche + tiri salvezza -->
   <div>
     <div class="sec-label">Caratteristiche</div>
     <div class="caract-col" id="cl"></div>
+    <div style="margin-top:16px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Tiri Salvezza</span></div>
+        <div class="card-body" id="ts-col"></div>
+      </div>
+    </div>
   </div>
 
   <!-- CENTER -->
   <div class="center-col">
 
-    <!-- TS + ABILITÀ -->
+    <!-- ABILITÀ -->
     <div class="mob-section">
-      <div class="mob-toggle open" onclick="togMob(this)">Statistiche &amp; Abilità</div>
+      <div class="mob-toggle open" onclick="togMob(this)">Abilità</div>
       <div class="mob-content open">
-        <div class="skills-2col">
-          <div class="card">
-            <div class="card-head"><span class="card-title">Tiri Salvezza</span></div>
-            <div class="card-body" id="ts-col"></div>
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Abilità</span>
+            <button class="add-btn" onclick="addAb()">+ aggiungi</button>
           </div>
-          <div class="card">
-            <div class="card-head">
-              <span class="card-title">Abilità</span>
-              <button class="add-btn" onclick="addAb()">+ aggiungi</button>
-            </div>
-            <div class="card-body" id="ab-col"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIRTÙ / VIZIO -->
-    <div class="mob-section">
-      <div class="mob-toggle open" onclick="togMob(this)">Virtù &amp; Vizi</div>
-      <div class="mob-content open">
-        <div class="vv-grid">
-          <div>
-            <div class="sec-label">Virtù</div>
-            <textarea class="vv-area" id="f-vir">Determinazione — coltiva coraggio e forza d'animo</textarea>
-          </div>
-          <div>
-            <div class="sec-label">Vizio</div>
-            <textarea class="vv-area" id="f-viz">Indolenza — non si oppone alle ingiustizie, non aiuta i bisognosi</textarea>
-          </div>
+          <div class="card-body ab-2col" id="ab-col"></div>
         </div>
       </div>
     </div>
@@ -192,6 +174,20 @@
             </div>
           </div>
           <div class="card-body" id="ki-abilities-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVILEGI -->
+    <div class="mob-section">
+      <div class="mob-toggle open" onclick="togMob(this)">Privilegi &amp; Tratti</div>
+      <div class="mob-content open">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Privilegi &amp; Tratti</span>
+            <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
+          </div>
+          <div class="card-body" id="pv-l"></div>
         </div>
       </div>
     </div>
@@ -260,6 +256,12 @@
       <div class="spe-dots" id="spe-d"></div>
     </div>
 
+    <!-- VITA DIVINA -->
+    <div class="vd-card">
+      <div class="vd-title">♥ Vita Divina ♥</div>
+      <div class="vd-lives" id="vd-lives"></div>
+    </div>
+
     <!-- DIVINA ISPIRAZIONE -->
     <div class="res-block">
       <div class="res-head">
@@ -289,20 +291,29 @@
       </div>
     </div>
 
-    <!-- PRIVILEGI -->
-
-<div class="mob-section">
-  <div class="mob-toggle open" onclick="togMob(this)">Privilegi &amp; Tratti</div>
-  <div class="mob-content open">
-    <div class="res-block" style="border:none; padding:0;">
+    <!-- LIVELLI INDEBOLIMENTO -->
+    <div class="res-block">
       <div class="res-head">
-        <span class="res-name">Privilegi &amp; Tratti</span>
-        <button class="add-btn" onclick="addPriv()">+ aggiungi</button>
+        <span class="res-name">⚠ Indebolimento</span>
+        <button class="tsm-reset" onclick="D.exhaustion=0;window.rExh()">↺ reset</button>
       </div>
-      <div class="res-body" id="pv-l"></div>
+      <div class="res-body" id="exh-col"></div>
     </div>
-  </div>
-</div>
+
+    <!-- VIRTÙ & VIZI -->
+    <div class="res-block">
+      <div class="res-head"><span class="res-name">Virtù &amp; Vizi</span></div>
+      <div class="res-body">
+        <div style="margin-bottom:10px">
+          <div class="sec-label" style="margin-bottom:4px">Virtù</div>
+          <textarea class="vv-area" id="f-vir">Determinazione — coltiva coraggio e forza d'animo</textarea>
+        </div>
+        <div>
+          <div class="sec-label" style="margin-bottom:4px">Vizio</div>
+          <textarea class="vv-area" id="f-viz">Indolenza — non si oppone alle ingiustizie, non aiuta i bisognosi</textarea>
+        </div>
+      </div>
+    </div>
 
     <!-- NOTE -->
     <div class="res-block">
@@ -324,9 +335,6 @@
     <button class="f-btn" onclick="copiaLinkMaster()" title="Copia link sola lettura">
       👁️ <span>Link Master</span>
     </button>
-    <button class="f-btn" id="btn-pdf" onclick="esportaPDF()" title="Esporta in PDF">
-      📄 <span>Scarica PDF</span>
-    </button>
   </div>
 </div>
 
@@ -340,7 +348,7 @@ var D={
   vir:"Determinazione — coltiva coraggio e forza d'animo",
   viz:'Indolenza — non si oppone alle ingiustizie, non aiuta i bisognosi',
   cr:"Ex soldato che obbediva ciecamente agli ordini, anche i più crudeli. Ha lasciato che i deboli subissero senza schierarsi. Ora è arrabbiato con sé stesso e cerca redenzione attraverso il Viaggio all'Inferno.",
-  nt:'',spe:33,ki:0,kiMax:2,di:false,scPf:22,scOn:false,tsm:{s:0,f:0},
+  nt:'',spe:33,ki:0,kiMax:2,di:false,scPf:22,scOn:false,tsm:{s:0,f:0},vitaDivina:3,exhaustion:0,
   kiAb:[
     {costo:'1 Ki', desc:'Tempesta di Colpi — 2 attacchi disarmati come azione bonus'},
     {costo:'1 Ki', desc:'Pazienza Difensiva — usa Schivata come azione bonus'},
@@ -533,7 +541,7 @@ window.applyAll = function(){
   
   if(D.theme&&D.theme!=='custom'){var b=document.querySelector('[data-t="'+D.theme+'"]'); window.setTheme(D.theme,b);}
   
-  window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpe(); window.rTsm(); window.rPriv(); window.rAll();
+  window.rCar(); window.rTS(); window.rAb(); window.rEmbl(); window.rAtk(); window.rSpe(); window.rTsm(); window.rPriv(); window.rVitaDivina(); window.rExh(); window.rAll();
   window.rKi(); window.updScBar();
   window.resizeAllTextareas();
 };
