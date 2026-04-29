@@ -153,6 +153,7 @@ onAuthStateChanged(auth, async (user) => {
       const qs = await getDocs(q);
       const seen = new Set();
       qs.forEach(snap => {
+        if (snap.id.includes('dm_sessione')) return;
         if (snap.id.includes('bartolomeo')) {
           try {
             const parsed = JSON.parse(snap.data().data || '{}');
